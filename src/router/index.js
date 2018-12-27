@@ -13,6 +13,9 @@ import PlanCenter from '@/pages/PlanCenter'
 import LandDetail from '@/pages/LandDetail'
 import LandManage from '@/pages/LandManage'
 import MessageCenter from '@/pages/MessageCenter'
+import RoleManager from '@/pages/RoleManager'
+import FinancialManager from '@/pages/FinancialManager'
+import VegetableManager from '@/pages/VegetableManager'
 
 Vue.use(Router)
 
@@ -110,6 +113,36 @@ export default new Router({
         path: '/MessageCenter',
         component: MessageCenter,
         name: 'MessageCenter'
+      }]
+    },
+    {
+      path: '/',
+      component: HelloWorld,
+      name: 'HelloWorld',
+      children: [{
+        path: '/RoleManager',
+        component: RoleManager,
+        name: 'RoleManager'
+      }]
+    },
+    {
+      path: '/',
+      component: HelloWorld,
+      name: 'HelloWorld',
+      children: [{
+        path: '/FinancialManager',
+        component: FinancialManager,
+        name: 'FinancialManager'
+      }]
+    },
+    {
+      path: '/',
+      component: HelloWorld,
+      name: 'HelloWorld',
+      children: [{
+        path: '/VegetableManager',
+        component: VegetableManager,
+        name: 'VegetableManager'
       }]
     }
 

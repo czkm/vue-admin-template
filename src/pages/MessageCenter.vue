@@ -54,7 +54,7 @@
 </template>
 
 <script>
-// import Axios from '@/api/Axios'
+// import {reqMessage} from '@/api'
 // import axios from 'axios'
 export default {
   data () {
@@ -83,26 +83,15 @@ export default {
       }).then(res => {
         this.messagepanel = res.data.messagepanel
       })
-      // Axios.postTest('getplant').then(res => {
-      //   this.tableData = res.data.tableData
-      // // })
-      // Axios.getTest('getmessagepanel').then(res => {
-      //   // console.log(res)
-      //   this.messagepanel = res.data.messagepanel
-      // })
-      // axios.get('https://www.easy-mock.com/mock/5c0c79f91b4f006bfb76b9b5/example/getmessagepanel',
-      //   {
-      //     openid: 1
-      //   }
-      // ).then((res) => {
-      //   this.messagepanel = res.data.messagepanel
-      // })
     }
   },
   mounted () {
     this.$nextTick(() => {
       this.httpGet()
     })
+    // reqMessage().then((res) => {
+    //   this.messagepanel = res.messagepanel
+    // })
   }
 
 }

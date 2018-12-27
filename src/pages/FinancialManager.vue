@@ -1,7 +1,7 @@
 <!--  -->
 <template>
   <div>
-ordermanage
+FinancialManager
   </div>
 </template>
 

@@ -1,6 +1,6 @@
 <template>
   <!-- <div class="basetable" v-loading="loading" element-loading-text="拼命加载中"> -->
-  <div class="basetable">
+  <div class="basetable" v-loading="loading" element-loading-text="拼命加载中">
     <div class="selectMenu">
       <el-input v-model="search" clearable style="width: 200px" placeholder="请输入内容"/>
       <el-button type="primary" @click="handleSearch()">搜索</el-button>
@@ -90,86 +90,7 @@ export default {
       pagesize: 10, //    每页的数据
       loading: true,
       // tableData: '',
-      tableData: [
-        {
-          landplanid: '01',
-          landid: 'A1',
-          leased: '王',
-          landnumber: 'A001',
-          landarea: '20㎡',
-          landtype: '已出租',
-          changeid: '陈',
-          changedate: '2018-06-03',
-          creatdate: '2017-05-01'
-        },
-        {
-          landplanid: '01',
-          landid: 'A1',
-          leased: '王',
-          landnumber: 'A001',
-          landarea: '20㎡',
-          landtype: '已出租',
-          changeid: '陈',
-          changedate: '2018-06-03',
-          creatdate: '2017-05-02'
-        },
-        {
-          landplanid: '01',
-          landid: 'A1',
-          leased: '王',
-          landnumber: 'A001',
-          landarea: '20㎡',
-          landtype: '已出租',
-          changeid: '陈',
-          changedate: '2018-06-03',
-          creatdate: '2017-05-03'
-        },
-        {
-          landplanid: '01',
-          landid: 'A1',
-          leased: '王',
-          landnumber: 'A001',
-          landarea: '20㎡',
-          landtype: '已出租',
-          changeid: '陈',
-          changedate: '2018-06-03',
-          creatdate: '2017-05-04'
-        },
-        {
-          landplanid: '01',
-          landid: 'A1',
-          leased: '王',
-          landnumber: 'A001',
-          landarea: '20㎡',
-          landtype: '已出租',
-          changeid: '陈',
-          changedate: '2018-06-03',
-          creatdate: '2017-05-03'
-        },
-        {
-          landplanid: '01',
-          landid: 'A1',
-          leased: '王',
-          landnumber: 'A001',
-          landarea: '20㎡',
-          landtype: '已出租',
-          changeid: '陈',
-          changedate: '2018-06-03',
-          creatdate: '2017-05-03'
-        },
-        {
-          landplanid: '01',
-          landid: 'A1',
-          leased: '王',
-          landnumber: 'A001',
-          landarea: '20㎡',
-          landtype: '已出租',
-          changeid: '陈',
-          changedate: '2018-06-03',
-          creatdate: '2017-05-03'
-        }
-      ],
-
+      tableData: [],
       dialogFormVisible: false,
       formLabelWidth: '80px',
       form: {},
@@ -179,9 +100,14 @@ export default {
     }
   },
   created () {
-    // setTimeout(() => {
+    // this.$nextTick(() => {
     //   this.loading = false
-    // }, 1500)
+    //   this.httpGet()
+    // })
+    setTimeout(() => {
+      this.loading = false
+      this.httpGet()
+    }, 1000)
     // this.getdata()
   },
   methods: {
@@ -196,18 +122,18 @@ export default {
     //     }
     //   })
     // },
-    // getdata () {
-    //   let _this = this
-    //   axios
-    //     .post(this.baseUrl + '/getlanddetail')
-    //     .then(function (response) {
-    //       console.log(response.data.tableData)
-    //       _this.tableData = response.data.tableData
-    //     })
-    //     .catch(function (error) {
-    //       console.log(error)
-    //     })
-    // },
+    httpGet () {
+      let _this = this
+      this.$axios
+        .post(this.baseUrl + '/getlanddetail2')
+        .then(function (response) {
+          console.log(response.data.tableData)
+          _this.tableData = response.data.tableData
+        })
+        .catch(function (error) {
+          console.log(error)
+        })
+    },
 
     add () {
       this.form = {

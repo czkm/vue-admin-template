@@ -1,7 +1,7 @@
 <!--  -->
 <template>
   <div>
-ordermanage
+VegetableManager
   </div>
 </template>
 

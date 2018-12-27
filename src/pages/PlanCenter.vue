@@ -142,6 +142,7 @@ export default {
   mounted () {
     this.$nextTick(() => {
       this.httpGet()
+      this.testaxios()
     })
   },
   // created () {
@@ -183,6 +184,7 @@ export default {
   },
 
   methods: {
+
     httpGet () {
       this.$axios({
         url: this.$store.state.bseurl + '/getplant',
@@ -192,10 +194,40 @@ export default {
         this.tableData = res.data.tableData
         // console.log(res)
       })
-
       // Axios.getTest('getmessagepanel').then(res => {
       //   console.log(res)
       // })
+    },
+    testaxios () {
+      // this.$axios.post('http://172.16.0.128:8090/balance/housing/fwuser/index', {
+      //   openid: 122
+
+      // },
+      // {
+      //   header: {
+      //     'Content-Type': 'application/json;charset=UTF-8'
+
+      //   }
+      // }
+      // )
+      //   .then(function (response) {
+      //     console.log('人体生物节律一段时间')
+      //     console.log(response)
+      //   })
+      //   .catch(function (error) {
+      //     console.log(error)
+      //   })
+
+      this.$axios.post('http://yunshi.fancybull.cn/yscs/wx/rhyt/getrhythms', {wxuserid: 3}
+        // headers: {
+        //   'Content-Type': 'Access-Control-Allow-Origin',
+        //   'token': '5E16EB288083A71C590FE809AA88C0C9'
+        // }
+      ).then(res => {
+        console.log(res)
+      }).catch((e) => {
+        console.log(e)
+      })
     },
 
     test (index, row, item) {

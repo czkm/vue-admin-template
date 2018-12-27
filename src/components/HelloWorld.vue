@@ -249,6 +249,27 @@ export default {
           id: 6,
           url: 'MessageCenter',
           iconCls: 'fa el-icon-refresh'
+        },
+        {
+          name: '角色管理',
+          pid: 0,
+          id: 7,
+          url: 'RoleManager',
+          iconCls: 'fa el-icon-info'
+        },
+        {
+          name: '财务管理',
+          pid: 0,
+          id: 8,
+          url: 'FinancialManager',
+          iconCls: 'fa el-icon-warning'
+        },
+        {
+          name: '蔬菜管理',
+          pid: 0,
+          id: 9,
+          url: 'VegetableManager',
+          iconCls: 'fa el-icon-document'
         }
       ]
     }
