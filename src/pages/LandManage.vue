@@ -20,7 +20,7 @@
     </el-table-column>
     <el-table-column
       prop="name"
-      label="姓名">
+      label="农场名称">
     </el-table-column>
     <el-table-column
       prop="acreage"

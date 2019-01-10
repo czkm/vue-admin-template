@@ -122,6 +122,13 @@ export default {
           iconCls: 'fa fa-id-card-o'
         },
         {
+          name: 'app用户管理',
+          pid: 0,
+          id: 10,
+          url: 'AppUsermanage',
+          iconCls: 'fa fa-id-card-o'
+        },
+        {
           name: '用户中心',
           pid: 0,
           id: 2,
@@ -247,28 +254,44 @@ export default {
           name: '消息中心',
           pid: 0,
           id: 6,
-          url: 'MessageCenter',
-          iconCls: 'fa el-icon-refresh'
+          url: 'MessageManage',
+          iconCls: 'fa el-icon-refresh',
+          childNode: [
+            {
+              name: '消息管理',
+              pid: 6,
+              id: 61,
+              url: 'MessageCenter',
+              iconCls: 'fa el-icon-sort'
+            },
+            {
+              name: '轮播管理',
+              pid: 6,
+              id: 62,
+              url: 'SliderManage',
+              iconCls: 'fa el-icon-document'
+            }
+          ]
         },
         {
           name: '角色管理',
           pid: 0,
           id: 7,
-          url: 'RoleManager',
+          url: 'RoleManage',
           iconCls: 'fa el-icon-info'
         },
         {
           name: '财务管理',
           pid: 0,
           id: 8,
-          url: 'FinancialManager',
+          url: 'FinancialManage',
           iconCls: 'fa el-icon-warning'
         },
         {
           name: '蔬菜管理',
           pid: 0,
           id: 9,
-          url: 'VegetableManager',
+          url: 'VegetableManage',
           iconCls: 'fa el-icon-document'
         }
       ]

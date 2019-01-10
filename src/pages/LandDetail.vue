@@ -12,15 +12,16 @@
         :data="tableData.slice((currentPage-1)*pagesize,currentPage*pagesize)"
         style="width: 100%"
       >
-        <el-table-column prop="landplanid" label="土地规划ID" width="150"></el-table-column>
-        <el-table-column prop="landid" label="农场土地ID" width="150"></el-table-column>
-        <el-table-column prop="leased" label="租贷人ID" width="150"></el-table-column>
-        <el-table-column prop="landnumber" label="土地编号" width="150"></el-table-column>
-        <el-table-column prop="landarea" label="土地面积" width="150"></el-table-column>
-        <el-table-column prop="landtype" label="土地状态" width="150"></el-table-column>
-        <el-table-column prop="creatdate" label="创建时间" width="150"></el-table-column>
-        <el-table-column prop="changedate" label="修改时间" width="150"></el-table-column>
-        <el-table-column prop="changeid" label="修改人ID" width="150"></el-table-column>
+        <!-- <el-table-column prop="landplanid" label="土地规划ID" width="150"></el-table-column> -->
+        <el-table-column prop="landnumber" label="土地编号" ></el-table-column>
+        <el-table-column prop="landid" label="农场名称" ></el-table-column>
+        <el-table-column prop="leased" label="租贷人" ></el-table-column>
+
+        <el-table-column prop="landarea" label="土地面积" ></el-table-column>
+        <el-table-column prop="landtype" label="土地状态" ></el-table-column>
+        <el-table-column prop="creatdate" label="创建时间" ></el-table-column>
+        <el-table-column prop="changedate" label="修改时间" ></el-table-column>
+        <el-table-column prop="changeid" label="修改人" ></el-table-column>
 
         <el-table-column label="操作">
           <template slot-scope="scope">
@@ -42,9 +43,9 @@
     <!-- 新建编辑 -->
     <el-dialog title="用户信息" :visible.sync="dialogFormVisible">
       <el-form :model="form">
-        <el-form-item label="土地ID" :label-width="formLabelWidth">
+        <!-- <el-form-item label="土地ID" :label-width="formLabelWidth">
           <el-input v-model="form.landplanid" auto-complete="off"></el-input>
-        </el-form-item>
+        </el-form-item> -->
         <el-form-item label="土地名称" :label-width="formLabelWidth">
           <el-input v-model="form.landid" auto-complete="off"></el-input>
         </el-form-item>

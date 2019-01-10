@@ -7,36 +7,36 @@
       height="600"
       style="width: 100%"
     >
-      <el-table-column label="姓名" width="150">
+      <el-table-column label="用户" width="200">
         <template slot-scope="scope">
           <el-tag size="medium" v-html="format(scope.row.name)"/>
         </template>
       </el-table-column>
-      <el-table-column label="手机号码" width="150">
+      <el-table-column label="手机号码" width="200">
         <template slot-scope="scope">
           <span v-html="format(scope.row.phone)"/>
         </template>
       </el-table-column>
 
-      <el-table-column label="面积" width="150">
+      <el-table-column label="面积" width="200">
         <template slot-scope="scope">
           <span v-html="format(scope.row.acreage)"/>
         </template>
       </el-table-column>
-
+ <!--
       <el-table-column label="开垦时间" width="150">
         <template slot-scope="scope">
-          <!-- <i class="el-icon-time"/> -->
+
           <span v-html="format(scope.row.startdate)"/>
         </template>
       </el-table-column>
-
-      <el-table-column label="播种时间" width="150">
+-->
+      <el-table-column label="播种时间" width="200">
         <template slot-scope="scope">
           <span v-html="format(scope.row.seedtime)"/>
         </template>
       </el-table-column>
-      <el-table-column label="种植种类" width="150">
+      <el-table-column label="蔬菜种类" width="200">
         <template slot-scope="scope">
 
       <el-select v-model="scope.row.value" placeholder="请选择">
@@ -51,17 +51,17 @@
         </template>
       </el-table-column>
 
-      <el-table-column label="种植周期" width="150">
+      <el-table-column label="种植周期" width="200">
         <template slot-scope="scope">
           <span style="margin-left: 10px" v-html="format(scope.row.plant)"/>
         </template>
       </el-table-column>
 
-      <el-table-column label="收获时间" width="150">
+      <!-- <el-table-column label="收获时间" width="150">
         <template slot-scope="scope">
           <span style="margin-left: 10px" v-html="format(scope.row.enddate)"/>
         </template>
-      </el-table-column>
+      </el-table-column> -->
 
       <el-table-column label="操作" class="btn-group">
         <template slot-scope="scope">

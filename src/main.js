@@ -8,11 +8,13 @@ import 'element-ui/lib/theme-chalk/index.css'
 // import 'font-awesome/css/font-awesome.min.css'
 import axios from 'axios'
 import store from './store/index'
+import echarts from 'echarts'
 
 // axios.defaults.headers.post['Content-Type'] = 'Access-Control-Allow-Origin'
+
+Vue.prototype.$echarts = echarts
 Vue.prototype.$axios = axios
 Vue.config.productionTip = false
-Vue.use(router)
 Vue.use(ElementUI)
 
 // 将所有未登录会话重定向到 /login

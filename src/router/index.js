@@ -13,9 +13,11 @@ import PlanCenter from '@/pages/PlanCenter'
 import LandDetail from '@/pages/LandDetail'
 import LandManage from '@/pages/LandManage'
 import MessageCenter from '@/pages/MessageCenter'
-import RoleManager from '@/pages/RoleManager'
-import FinancialManager from '@/pages/FinancialManager'
-import VegetableManager from '@/pages/VegetableManager'
+import RoleManage from '@/pages/RoleManage'
+import FinancialManage from '@/pages/FinancialManage'
+import VegetableManage from '@/pages/VegetableManage'
+import SliderManage from '@/pages/SliderManage'
+import AppUsermanage from '@/pages/AppUsermanage'
 
 Vue.use(Router)
 
@@ -27,6 +29,7 @@ export default new Router({
       component: login,
       name: 'login'
     },
+
     {
       path: '*',
       name: 'notfound',
@@ -51,6 +54,16 @@ export default new Router({
         path: '/PlanCenter',
         component: PlanCenter,
         name: 'PlanCenter'
+      }]
+    },
+    {
+      path: '/',
+      component: HelloWorld,
+      name: 'HelloWorld',
+      children: [{
+        path: '/AppUsermanage',
+        component: AppUsermanage,
+        name: 'AppUsermanage'
       }]
     },
     {
@@ -113,6 +126,21 @@ export default new Router({
         path: '/MessageCenter',
         component: MessageCenter,
         name: 'MessageCenter'
+      }, {
+        path: '/SliderManage',
+        component: SliderManage,
+        name: 'SliderManage'
+      }
+      ]
+    },
+    {
+      path: '/',
+      component: HelloWorld,
+      name: 'HelloWorld',
+      children: [{
+        path: '/RoleManage',
+        component: RoleManage,
+        name: 'RoleManage'
       }]
     },
     {
@@ -120,9 +148,9 @@ export default new Router({
       component: HelloWorld,
       name: 'HelloWorld',
       children: [{
-        path: '/RoleManager',
-        component: RoleManager,
-        name: 'RoleManager'
+        path: '/FinancialManage',
+        component: FinancialManage,
+        name: 'FinancialManage'
       }]
     },
     {
@@ -130,19 +158,9 @@ export default new Router({
       component: HelloWorld,
       name: 'HelloWorld',
       children: [{
-        path: '/FinancialManager',
-        component: FinancialManager,
-        name: 'FinancialManager'
-      }]
-    },
-    {
-      path: '/',
-      component: HelloWorld,
-      name: 'HelloWorld',
-      children: [{
-        path: '/VegetableManager',
-        component: VegetableManager,
-        name: 'VegetableManager'
+        path: '/VegetableManage',
+        component: VegetableManage,
+        name: 'VegetableManage'
       }]
     }
 

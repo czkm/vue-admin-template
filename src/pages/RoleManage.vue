@@ -8,10 +8,16 @@
     </div>
     <!-- 主界面 -->
     <div class="tableMain">
+
       <el-table
         :data="tableData.slice((currentPage-1)*pagesize,currentPage*pagesize)"
+        @selection-change="handleSelectionChange"
         style="width: 100%"
       >
+       <el-table-column
+      type="selection"
+      width="55">
+    </el-table-column>
         <el-table-column label="姓名" width="150">
         <template slot-scope="scope">
           <el-tag size="medium" v-html="(scope.row.name)"/>
@@ -28,10 +34,6 @@
          </template>
         </el-table-column>
         <el-table-column prop="comment" label="备注" ></el-table-column>
-        <!-- <el-table-column prop="landtype" label="土地状态" ></el-table-column>
-        <el-table-column prop="creatdate" label="创建时间" ></el-table-column>
-        <el-table-column prop="changedate" label="修改时间" ></el-table-column>
-        <el-table-column prop="changeid" label="修改人ID" ></el-table-column> -->
 
         <el-table-column label="操作">
           <template slot-scope="scope">
@@ -52,7 +54,7 @@
     </div>
     <!-- 新建编辑 -->
     <el-dialog title="管理人员" :visible.sync="dialogFormVisible">
-      <el-form :model="form">
+      <el-form  :model="form" >
         <el-form-item label="姓名" :label-width="formLabelWidth">
           <el-input class="newinput" v-model="form.name"></el-input>
         </el-form-item>
@@ -148,90 +150,36 @@ const RootlistOptions = [
 export default {
   data () {
     return {
+
+      multipleSelection: [],
       isIndeterminate: true,
       checkAll: false,
       RootList: RootlistOptions,
-      groups: [{
-        value: '农场管理',
-        label: '农场管理'
-      }, {
-        value: '超级农场管理',
-        label: '超级农场管理'
-      }],
+      groups: [
+        {
+          value: '农场管理',
+          label: '农场管理'
+        }, {
+          value: '超级农场管理',
+          label: '超级农场管理'
+        }],
       group: '',
-      status: false,
+      // status: false,
 
       baseUrl: 'https://www.easy-mock.com/mock/5c0c79f91b4f006bfb76b9b5/example',
       search: '',
       currentPage: 1, // 初始页
       pagesize: 10, //    每页的数据
       loading: true,
-      // tableData: '',
-      tableData: [
-        {
-          name: '小王',
-          phone: '12345678',
-          group: '农场管理',
-          status: true,
-          comment: '农场管理',
-          password: '32132'
-        //   groups: [{
-        //     value: '农场管理',
-        //     label: '农场管理'
-        //   },
-        //   {
-        //     value: '超级农场管理',
-        //     label: '超级农场管理'
-        //   }],
-        //   value: '农场管理'
-        }, {
-          name: '小华',
-          phone: '12345678',
-          group: '农场管理',
-          status: false,
-          comment: '农场管理',
-          password: ''
-        //   groups: [{
-        //     value: '农场管理',
-        //     label: '农场管理'
-        //   },
-        //   {
-        //     value: '超级农场管理',
-        //     label: '超级农场管理'
-        //   }],
-        //   value: '农场管理'
-        }, {
-          name: '小林',
-          phone: '12345678',
-          group: '超级农场管理',
-          status: true,
-          comment: '超级管理',
-          password: 'admin'
-        //   groups: [{
-        //     value: '农场管理',
-        //     label: '农场管理'
-        //   },
-        //   {
-        //     value: '超级农场管理',
-        //     label: '超级农场管理'
-        //   }],
-        //   value: '超级农场管理'
-        }
-      ],
-
+      tableData: [],
       dialogFormVisible: false,
       formLabelWidth: '80px',
       form: {},
-      // value6: '',
       currentIndex: ''
     }
   },
   created () {
-    setTimeout(() => {
-      this.loading = false
-    //   this.httpGet()
-    }, 1000)
-    // this.getdata()
+    this.httpGet()
   },
   methods: {
     // showTime () {
@@ -252,6 +200,7 @@ export default {
         .then(function (res) {
           console.log(res)
           _this.tableData = res.data.tableData
+          _this.loading = false
         })
         .catch(function (error) {
           console.log(error)
@@ -333,12 +282,15 @@ export default {
     handleCheckAllChange (val) {
       this.form.RootList = val ? RootlistOptions : []
       this.isIndeterminate = false
-    }
+    },
     // handleRootListChange (value) {
     //   let checkedCount = value.length
     //   this.checkAll = checkedCount === this.Rootlist.length
     //   this.isIndeterminate = checkedCount > 0 && checkedCount < this.Rootlist.length
     // }
+    handleSelectionChange (val) {
+      this.multipleSelection = val
+    }
 
   }
 }

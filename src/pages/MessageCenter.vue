@@ -1,6 +1,6 @@
 <!--  -->
 <template>
-  <div>
+  <div v-loading="loading">
     <el-row :gutter="20">
       <el-col :span="8">
         <div class="messagecenter">
@@ -24,29 +24,27 @@
         </div>
       </el-col>
 
-      <el-dialog title="发布详情" :visible.sync="dialogTableVisible">
+      <!-- <el-dialog title="发布详情" :visible.sync="dialogTableVisible">
         <el-table :data="messagepanel">
           <el-table-column property="startdate" label="日期" width="150"></el-table-column>
           <el-table-column property="title" label="标题" width="150"></el-table-column>
           <el-table-column property="name" label="发布者" width="150"></el-table-column>
           <el-table-column property="content" label="内容"></el-table-column>
         </el-table>
-      </el-dialog>
+      </el-dialog> -->
 
-      <el-col :span="12">
+      <el-col :span="14">
         <el-card class="box-card" shadow="hover">
           <div slot="header" class="clearfix">
             <span>发布记录</span>
-            <el-button
-              style="float: right; padding: 3px 0"
-              @click="dialogTableVisible = true"
-              type="text"
-            >查看详情</el-button>
+
           </div>
-          <div v-for="(item, index) in messagepanel" :key="index" class="text item">
-            {{'发布信息：' + item.title}}
-            <p></p>
-          </div>
+        <el-table :data="messagepanel">
+          <el-table-column property="startdate" label="日期" width="150"></el-table-column>
+          <el-table-column property="title" label="标题" width="150"></el-table-column>
+          <el-table-column property="name" label="发布者" width="150"></el-table-column>
+          <el-table-column property="content" label="内容"></el-table-column>
+        </el-table>
         </el-card>
       </el-col>
     </el-row>
@@ -59,6 +57,7 @@
 export default {
   data () {
     return {
+      loading: true,
       // time: new Date(),
       dialogTableVisible: false,
       labelPosition: 'right',
@@ -76,12 +75,14 @@ export default {
        '内容' + this.publicform.content)
     },
     httpGet () {
+      let _this = this
       this.$axios({
         url: 'https://www.easy-mock.com/mock/5c0c79f91b4f006bfb76b9b5/example/getmessagepanel',
         method: 'get'
 
       }).then(res => {
         this.messagepanel = res.data.messagepanel
+        _this.loading = false
       })
     }
   },
@@ -104,7 +105,7 @@ export default {
   margin: 0 auto;
 }
 .box-card {
-  width: 600px;
+  width: 800px;
   float: right;
 }
 </style>

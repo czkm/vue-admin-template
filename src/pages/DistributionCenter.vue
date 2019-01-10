@@ -2,6 +2,7 @@
   <div class="box">
 
  <el-input v-model="search"
+
     clearable
     style="width: 200px"
     placeholder="请输入内容"/>
@@ -10,6 +11,7 @@
          <el-button class="btn-add" type="success"
         @click="handleAdd()">添加</el-button>
   <el-table
+  v-loading="loading" element-loading-text="拼命加载中"
     :data="tableData"
     border
     style="width: 100%">
@@ -100,6 +102,7 @@ import {reqOrderManage} from '@/api'
 export default {
   data () {
     return {
+      loading: true,
       userid: '1',
       search: '',
       currentPage: 1, // 初始页
@@ -114,6 +117,7 @@ export default {
     reqOrderManage({}).then(res => {
       console.log(res)
       this.tableData = res.tableData
+      this.loading = false
     })
   },
   methods: {

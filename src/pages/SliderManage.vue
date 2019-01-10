@@ -1,7 +1,7 @@
 <!--  -->
 <template>
   <div>
-FinancialManager
+slider
   </div>
 </template>
 
