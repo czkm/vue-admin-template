@@ -134,7 +134,7 @@ export default {
     return {
       fileList: [],
       multipleSelection: [],
-      isIndeterminate: true,
+      // isIndeterminate: true,
 
       baseUrl: 'https://www.easy-mock.com/mock/5c0c79f91b4f006bfb76b9b5/example',
       search: '',

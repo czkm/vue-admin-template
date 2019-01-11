@@ -26,6 +26,7 @@ Vue.use(Vuex)
 const store = new Vuex.Store({
   state: {
     bseurl: 'https://www.easy-mock.com/mock/5c0c79f91b4f006bfb76b9b5/example',
+    BaseUrl: 'http://172.16.0.67:8088/farmbackstage',
     options: [],
     activeIndex: '/mian',
     userInfo: {}

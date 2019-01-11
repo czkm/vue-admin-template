@@ -6,7 +6,7 @@
     <el-col :span="8">
       <el-card shadow="hover">
         <el-tag  >总收入</el-tag>
-        <count-to :startVal='startVal' :endVal='sumadd' :duration='3000' class="card-panel-num"/>
+        <count-to :startVal='startVal' :endVal='total' :duration='3000' class="card-panel-num"/>
       </el-card>
   </el-col>
    <el-col :span="3" >
@@ -32,7 +32,9 @@
         <el-col :span="8"><img src="../assets/logo.png" class="image"></el-col>
         <el-col :span="12">
           <el-tag >今日收入</el-tag>
-          <h3>￥123132</h3>
+          <p>
+           <count-to :startVal='startVal' :endVal='today' :duration='3000' class="card-panel-num"/>
+           </p>
         </el-col>
       </el-row>
     </el-card>
@@ -43,7 +45,9 @@
         <el-col :span="8"><img src="../assets/logo.png" class="image"></el-col>
         <el-col :span="12">
           <el-tag >累计收入</el-tag>
-           <h3>￥123132</h3>
+          <p>
+            <count-to :startVal='startVal' :endVal='monthCount' :duration='3000' class="card-panel-num"/>
+            </p>
         </el-col>
       </el-row>
     </el-card>
@@ -64,15 +68,15 @@ export default {
   name: 'hello',
   data () {
     return {
-      // 月份
-      month: '',
-      sumadd: 1,
-      startVal: 0,
+      QueryUrl: this.$store.state.BaseUrl + '/chart/financial',
+      total: 0, // 总收入
+      today: 0, // 今日收入
+      monthCount: 0, // 当前月份累计收入
+      month: '', // 所选月份
+      startVal: 0, // 起始值
       loading: true,
       dataShadow: []
-      // data: [220, 182, 191, 234, 290, 330, 310, 123, 442, 321, 90, 149, 210, 122, 133, 334, 198, 123, 125, 220],
-      // yMax: 500,
-      // dataAxis: ['1/01', '1/02', '1/05', '1/08', '1/10', '1/12', '1/14', '1/16', '1/18', '1/20', '1/22', '1/24', '1/26', '1/28', '1/30']
+
     }
   },
   components: {
@@ -81,13 +85,16 @@ export default {
   },
 
   mounted () {
-    this.httpGet()
+    this.$nextTick(() => {
+      this.httpGet()
+    })
   },
   methods: {
     // 月份选择
     handlemounth () {
-      console.log(this.month)
+      this.EchartGet()
     },
+    // 绘制柱状图
     drawLine (text, dataAxis, data) {
       // 基于准备好的dom，初始化echarts实例
       let myChart = this.$echarts.init(document.getElementById('chartmain'))
@@ -115,7 +122,7 @@ export default {
           z: 10
         },
         yAxis: {
-          name: '人民币',
+          name: '人民币/元',
           axisLine: {
             show: false
           },
@@ -175,31 +182,51 @@ export default {
       })
     },
     httpGet () {
-      let _this = this
-      this.$axios
-        .get(this.$store.state.bseurl + '/echart')
-        .then(function (res) {
-          // _this.sumadd = res.data.data
-          // console.log(_this.arradd)
-          _this.drawLine(res.data.text, res.data.dataAxis, res.data.data)
-          _this.loading = false
-          _this.sum(res.data.data)
-        })
-        .catch(function (error) {
-          console.log(error)
-        })
+      this.EchartGet()
     },
-    // 计算收入
-    sum (arr) {
-      // eslint-disable-next-line no-eval
-      // console.log(eval(arr.join('+')))
+    // 获取数据
+    EchartGet () {
+      let month = (this.month).substring(0, 7)
+      console.log(month)
+      let _this = this
+      this.$axios.post(this.QueryUrl, {month}
+      ).then(res => {
+        // 判断回调有没有值
+        if (res.data.data.length === 0) {
+          _this.drawLine('该月份暂无数据')
+        } else {
+          console.log(res)
+          let text = res.data.text
+          let ARR = res.data.data
+          let dataAxis = []
+          let price = []
+          let total = res.data.total
+          let today = res.data.today
+          let monthCount = res.data.monthCount
+          console.log('total' + total + 'today' + today + 'monthCount' + monthCount)
+          _this.total = total
+          _this.today = today
+          // 判断月份
+          if (monthCount) {
+            _this.monthCount = monthCount
+          } else {
+            _this.monthCount = 0
+          }
 
-      // eslint-disable-next-line no-eval
-      this.sumadd = eval(arr.join('+')) * 1
-      console.log(typeof (this.sumadd))
+          for (let index = 0; index < ARR.length; index++) {
+            dataAxis.push(res.data.data[index].date.substring(5, 10))// 去掉年份
+            price.push(res.data.data[index].price)
+          // console.log(res.data.data[index].date)
+          // console.log(res.data.data[index].price)
+          }
+
+          _this.drawLine(text, dataAxis, price)
+          _this.loading = false
+        }
+      })
     }
-
   }
+
 }
 
 </script>

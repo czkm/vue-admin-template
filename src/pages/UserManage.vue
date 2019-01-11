@@ -1,381 +1,258 @@
 <template>
   <div class="box">
-    <el-input v-model="search"
+
+ <!-- <el-input v-model="search"
     clearable
     style="width: 200px"
     placeholder="请输入内容"/>
-    <el-dropdown>
-  <el-button type="primary">
-    选择月份<i class="el-icon-arrow-down el-icon--right"></i>
-  </el-button>
-  <el-dropdown-menu slot="dropdown">
-    <el-dropdown-item @click.native="five">5月</el-dropdown-item>
-    <el-dropdown-item @click.native="six">6月</el-dropdown-item>
-  </el-dropdown-menu>
-</el-dropdown>
-<div class="mounthcount">
-        <el-button   type="success" plain>{{ mounth }}总计:{{ nowprice }}元</el-button>
-</div>
-    <!-- 分页器初始:data="tables.slice((currentPage-1)*pagesize,currentPage*pagesize)" -->
-    <el-table
-      :data="tables.slice((currentPage-1)*pagesize,currentPage*pagesize)"
-      height="600"
-      style="width: 100%">
-      <el-table-column
-        label="租地开始日期"
-        width="150">
-        <template slot-scope="scope">
-          <i class="el-icon-time"/>
-          <span  v-html="format(scope.row.startdate)"/>
-        </template>
-      </el-table-column>
-      <el-table-column
-        label="租地结束日期"
-        width="150">
-        <template slot-scope="scope">
-          <i class="el-icon-time"/>
-          <span  v-html="format(scope.row.enddate)"/>
-        </template>
-      </el-table-column>
-      <el-table-column
-        label="姓名"
-        width="150">
-        <template slot-scope="scope">
-          <!-- <el-popover trigger="hover" placement="top">
-            <p>姓名: {{ scope.row.name }}</p>
-            <p>住址: {{ scope.row.address }}</p>
-            <div slot="reference" class="name-wrapper">
-              <el-tag size="medium" v-html="format(scope.row.name)"/>
-            </div>
-          </el-popover> -->
-          <el-tag size="medium" v-html="format(scope.row.name)"/>
+ <el-button type="primary"
+        @click="handleSearch()">搜索</el-button>
+         <el-button class="btn-add" type="success"
+        @click="handleAdd()">新增</el-button> -->
 
-        </template>
-      </el-table-column>
+        <el-row>
+  <el-col :span="24">
+        <el-form :inline="true" :model="searchform" class="demo-form-inline">
+      <el-form-item label="用户名">
+        <el-input v-model="searchform.nc" placeholder="用户名"></el-input>
+      </el-form-item>
+       <el-form-item label="手机号">
+        <el-input v-model="searchform.sjhm" placeholder="手机号"></el-input>
+      </el-form-item>
+      <el-form-item label="选择时间">
+    <el-col :span="15">
+      <!-- <el-date-picker type="date" placeholder="选择日期" v-model="searchform.starttime" style="width: 100%;"></el-date-picker> -->
+        <el-date-picker
+      v-model="searchform.time"
+       value-format="yyyy-MM-dd"
+      type="daterange"
+      range-separator="至"
+      start-placeholder="开始日期"
+      end-placeholder="结束日期">
+    </el-date-picker>
+    </el-col>
+
+  </el-form-item>
+      <!-- <el-form-item label="活动区域">
+        <el-select v-model="searchform.region" placeholder="活动区域">
+          <el-option label="区域一" value="shanghai"></el-option>
+          <el-option label="区域二" value="beijing"></el-option>
+        </el-select>
+      </el-form-item> -->
+      <el-form-item>
+        <el-button type="primary" @click="onSubmit">查询</el-button>
+          <el-button type="danger" @click="handleclear">清除</el-button>
+      </el-form-item>
+    </el-form>
+    </el-col>
+</el-row>
+  <el-table
+      :data="tableData.slice((currentPage-1)*pagesize,currentPage*pagesize)"
+
+    border
+    style="width: 100%">
+
+    <el-table-column
+      prop="cymc"
+      label="菜园名称">
+    </el-table-column>
       <el-table-column
-        label="手机号码"
-        width="150">
+      prop="zdsl"
+      sortable
+      label="租地数量">
+    </el-table-column>
+
+     <!-- <el-table-column label="头像"  width="200">
         <template slot-scope="scope">
-          <span  v-html="format(scope.row.phone)"/>
+          <img  :src="scope.row.headimg" alt="" style="width: 50px;height: 50px">
         </template>
-      </el-table-column>
-      <el-table-column
-        label="地区"
-        width="150">
-        <template slot-scope="scope">
-          <span  v-html="format(scope.row.area)"/>
-        </template>
-      </el-table-column>
-       <el-table-column
-        label="土地区域"
-        width="150">
-        <template slot-scope="scope">
-          <span  v-html="format(scope.row.landarea)"/>
-        </template>
-      </el-table-column>
-      <el-table-column
-        label="面积"
-        width="150">
-        <template slot-scope="scope">
-          <span  v-html="format(scope.row.acreage)"/>
-        </template>
-      </el-table-column>
-       <el-table-column
-        label="年限"
-        width="150">
-        <template slot-scope="scope">
-          <span  v-html="format(scope.row.rentlimit)"/>
-        </template>
-      </el-table-column>
-          <el-table-column
-        label="支付状态"
-        width="150">
-        <template slot-scope="scope">
-          <span  v-html="format(scope.row.state)"/>
-        </template>
-      </el-table-column>
+        </el-table-column> -->
+    <el-table-column
+      prop="ncmc"
+
+      label="农场名称">
+    </el-table-column>
+
+    <el-table-column
+      prop="nc"
+      sortable
+      label="昵称">
+    </el-table-column>
+     <el-table-column
+      prop="sjhm"
+      label="手机号码">
+    </el-table-column>
+    <el-table-column
+      prop="zdmj"
+      sortable
+      label="租地面积/㎡">
+    </el-table-column>
+
+ <el-table-column
+      prop="zdje"
+      sortable
+      label="租地金额/元">
+    </el-table-column>
+    <el-table-column
+      prop="qzsj"
+      sortable
+      label="起租时间" width="200">
+    </el-table-column>
+    <el-table-column
+      prop="dzsj"
+      sortable
+      label="到租时间" width="200">
+    </el-table-column>
+    <el-table-column label="支付类型" >
+      <template slot-scope="scope">
+         <i v-if="scope.row.zflx == 1" >支付宝</i>
+         <i v-else-if="scope.row.zflx == 2" >微信</i>
+         <i v-else >其他</i>
+         </template>
+    </el-table-column>
 
       <el-table-column
-        label="支付金额"
-        width="150">
-        <template slot-scope="scope">
-          <span  v-html="format(scope.row.price)"/>
-        </template>
-      </el-table-column>
-        <el-table-column
-        label="支付类型"
-        width="150">
-        <template slot-scope="scope">
-          <span  v-html="format(scope.row.type)"/>
-        </template>
-      </el-table-column>
-        <el-table-column
-        label="地址"
-        width="250">
-        <template slot-scope="scope">
-          <span  v-html="format(scope.row.address)"/>
-        </template>
-      </el-table-column>
+      prop="zfddh"
+      sortable
+      label="支付订单号">
+    </el-table-column>
+    <el-table-column
+      prop="zfsj"
+      sortable
+      label="支付时间">
+    </el-table-column>
 
-      <!-- <el-table-column label="操作">
-        <template slot-scope="scope">
-          <el-button
-            size="mini"
-            @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
-          <el-button
-            size="mini"
-            type="danger"
-            @click="handleDelete(scope.$index, scope.row)">删除</el-button>
-        </template>
-      </el-table-column> -->
-    </el-table>
-     <el-pagination
-          :current-page="currentPage"
-          :page-sizes="[5, 10]"
-          :page-size="pagesize"
-          :total="tableData.length"
-          layout="total, sizes, prev, pager, next, jumper"
-          @size-change="handleSizeChange"
-          @current-change="handleCurrentChange"
-        />
-        <div class="count">
-        <el-button  type="primary" plain>总计:{{ totalprice }}元</el-button>
-        </div>
-
+  </el-table>
+  <el-pagination
+        :current-page="currentPage"
+        :page-sizes="[10,15]"
+        :page-size="pagesize"
+        :total="total"
+        layout="total, sizes, prev, pager, next, jumper"
+        @size-change="handleSizeChange"
+        @current-change="handleCurrentChange"
+      />
   </div>
 </template>
 
 <script>
-
 export default {
-
   data () {
     return {
+      QueryUrl: this.$store.state.BaseUrl + '/userinfo/queryleaseinfo',
+      total: 0,
       search: '',
       currentPage: 1, // 初始页
       pagesize: 10, //    每页的数据
-      mounth: '',
-      tableData: [
-        {
-          startdate: '2016-05-02',
-          enddate: '2017-05-02',
-          mounth: '05',
-          name: '王小虎',
-          phone: '1213132121',
-          area: '北京',
-          landarea: 'A1',
-          acreage: '50㎡',
-          rentlimit: '5年',
-          state: '支付',
-          price: '3600',
-          type: '支付宝',
-          address: '上海市普陀区金沙江路 1518 弄'
-        },
-        {
-          startdate: '2016-07-04',
-          enddate: '2017-07-04',
-          mounth: '07',
-          name: '王季虎',
-          phone: '1213132121',
-          area: '福建',
-          landarea: 'A1',
-          acreage: '120㎡',
-          rentlimit: '5年',
-          state: '支付',
-          price: '3600',
-          type: '支付宝',
-          address: '上海市普陀区金沙江路 1518 弄'
-        },
-        {
-          startdate: '2016-07-02',
-          enddate: '2017-07-04',
-          mounth: '07',
-          name: '王小虎',
-          phone: '1213132121',
-          area: '北京',
-          landarea: 'A1',
-          acreage: '50㎡',
-          rentlimit: '5年',
-          state: '支付',
-          price: '3600',
-          type: '支付宝',
-          address: '上海市普陀区金沙江路 1518 弄'
-        },
-        {
-          startdate: '2016-07-04',
-          enddate: '2017-07-04',
-          mounth: '07',
-          name: '王季虎',
-          phone: '1213132121',
-          area: '福建',
-          landarea: 'A1',
-          acreage: '120㎡',
-          rentlimit: '5年',
-          state: '支付',
-          price: '3600',
-          type: '支付宝',
-          address: '上海市普陀区金沙江路 1518 弄'
-        },
-        {
-          startdate: '2016-06-01',
-          enddate: '2017-06-04',
-          mounth: '06',
-          name: '王伯虎',
-          phone: '1213132121',
-          area: '福建',
-          landarea: 'A1',
-          acreage: '50㎡',
-          rentlimit: '1年',
-          state: '未支付',
-          price: '3600',
-          type: '支付宝',
-          address: '上海市普陀区金沙江路 1518 弄'
-        },
-        {
-          startdate: '2016-06-03',
-          enddate: '2017-06-04',
-          mounth: '06',
-          name: '王叔虎',
-          phone: '1213132121',
-          area: '福建',
-          landarea: 'A1',
-          acreage: '50㎡',
-          rentlimit: '5年',
-          state: '支付',
-          price: '3600',
-          type: '微信',
-          address: '上海市普陀区金沙江路 1518 弄'
-        },
-        {
-          startdate: '2016-05-04',
-          enddate: '2017-05-04',
-          mounth: '05',
-          name: '王季虎',
-          phone: '1213132121',
-          area: '福建',
-          landarea: 'A1',
-          acreage: '120㎡',
-          rentlimit: '5年',
-          state: '支付',
-          price: '3600',
-          type: '支付宝',
-          address: '上海市普陀区金沙江路 1518 弄'
-        },
-        {
-          startdate: '2016-05-04',
-          enddate: '2017-05-04',
-          mounth: '05',
-          name: '王季虎',
-          phone: '1213132121',
-          area: '福建',
-          landarea: 'A1',
-          acreage: '120㎡',
-          rentlimit: '5年',
-          state: '支付',
-          price: '3600',
-          type: '支付宝',
-          address: '上海市普陀区金沙江路 1518 弄'
-        }]
+      tableData: [],
+
+      searchform: {
+        nc: '',
+        sjhm: '',
+        time: ''
+      }
     }
   },
-
-  computed: {
-    // 表格模糊查询
-    tables () {
-      const search = this.search
-      console.log('this.tableData', this.tableData.index)
-      if (search) {
-        return this.tableData.filter(dataNews => {
-          return Object.keys(dataNews).some(key => {
-            return String(dataNews[key]).toLowerCase().indexOf(search) > -1
-          })
-        })
-      }
-      // console.log('this.tableData', this.tableData)
-      return this.tableData
-    },
-    // 计算价格
-    nowprice () {
-      let nowprice = 0
-      if (this.search) {
-        for (const i in this.tableData) {
-          if (this.search === this.tableData[i].mounth) {
-            console.log('月份')
-            nowprice += this.tableData[i].price * 1
-          }
-        }
-        // for (const i in this.tableData) {
-        // // console.log(i)
-        //   if (this.tableData[i].price) // 如果checkeds[i]的结果为truth，则进行累加
-        //   // eslint-disable-next-line brace-style
-        //   { nowprice += this.tableData[i].price * 1 }
-        // }
-      }
-
-      console.log(nowprice)
-      return nowprice
-    },
-
-    totalprice () {
-      let total = 0
-      for (const i in this.tableData) {
-        // console.log(i)
-        if (this.tableData[i].price) // 如果checkeds[i]的结果为truth，则进行累加
-        // eslint-disable-next-line brace-style
-        { total += this.tableData[i].price * 1 }
-      }
-      console.log(total)
-      return total
-    }
-  },
-
   methods: {
-    five () {
-      this.search = '05'
-      this.mounth = '5月'
-      console.log(this.search)
-    },
-    six () {
-      this.search = '06'
-      this.mounth = '6月'
-      console.log(this.search)
-    },
-    // serchitem () {
-    //   this.search = '05'
-    //   console.log(this.search)
-    // },
-    // 初始页currentPage、初始每页数据数pagesize和数据data
-    handleSizeChange: function (size) {
-      this.pagesize = size
-      console.log(this.pagesize) // 每页下拉显示数据
-    },
-    handleCurrentChange: function (currentPage) {
-      this.currentPage = currentPage
-      console.log(this.currentPage) // 点击第几页
-    },
-    handleEdit (index, row) {
-      console.log(index, row)
-    },
-    handleDelete (index, row) {
-      console.log(index, row)
-    },
-    format (val) {
-      if (val.indexOf(this.search) !== -1 && this.search !== '') {
-        return val.replace(this.search, '<font color="#89CACCe">' + this.search + '</font>')
-      } else {
-        return val
-      }
-    }
-  }
+    onSubmit () {
+      let _this = this
+      let nc = _this.searchform.nc
+      let sjhm = _this.searchform.sjhm
+      let starttime = _this.searchform.time[0]
+      let endtime = _this.searchform.time[1]
+      console.log(_this.searchform)
+      this.$axios.post(this.QueryUrl, {
+        nc,
+        sjhm,
+        starttime,
+        endtime
 
+      }).then(res => {
+        console.log(res)
+        _this.tableData = res.data.rows
+      })
+    },
+    handleclear () {
+      this.searchform.nc = ''
+      this.searchform.sjhm = ''
+      this.searchform.time = ''
+      this.handleDataGet()
+    },
+    // 显示编辑界面
+    // handleEdit: function (index, row) {
+    //   this.editFormVisible = true
+    //   this.editForm = Object.assign({}, row)
+    // },
+    // handleDelete (index, row) {
+    //   console.log(index, row)
+    // },
+    // handleSearch () {
+    //   console.log(this.search
+    //   )
+    // },
+
+    httpGet () {
+      this.handleDataGet()
+    },
+    // 页面加载获取初始值
+    handleDataGet () {
+      let _this = this
+      this.$axios.post(this.QueryUrl, {
+        page: 1,
+        limit: _this.pagesize
+      }).then(res => {
+        console.log(res)
+        console.log(res.data.rows)
+        let total = res.data.total// 返回页面总数
+        let limit = res.data.limit// 返回页数限制
+        let page = res.data.page// 返回第几页
+        _this.tableData = res.data.rows
+        _this.currentPage = page// 初始页
+        _this.total = total // 获取页面总数
+        _this.pagesize = limit// 初始页
+      })
+    },
+    // 控制页面页数
+    handleSizeChange: function (size) {
+      let _this = this
+      this.pagesize = size
+      console.log(this.pagesize)
+      this.$axios.post(this.QueryUrl, {
+        page: 1,
+        limit: _this.pagesize
+      }).then(res => {
+        console.log(res.data.rows)
+        let total = res.data.total// 返回页面总数
+        // let limit = res.data.limit//返回页面总数
+        let page = res.data.page// 返回页面
+        _this.tableData = res.data.rows
+        _this.currentPage = page// 初始页
+        _this.total = total
+      })
+    },
+    // 点击第几页
+    handleCurrentChange: function (currentPage) {
+      let _this = this
+      this.$axios.post(this.QueryUrl, {
+        page: currentPage,
+        limit: _this.pagesize
+      }).then(res => {
+        console.log(res)
+        _this.tableData = res.data.rows
+      })
+    }
+  },
+
+  mounted () {
+    this.$nextTick(() => {
+      this.httpGet()
+    })
+  }
 }
 </script>
 
 <style lang="scss" scoped>
 .count{
   text-align: right
-}
-.mounthcount{
-  float: right
 }
 </style>

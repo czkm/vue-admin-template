@@ -10,7 +10,7 @@
               <el-input v-model="publicform.title"></el-input>
             </el-form-item>
             <el-form-item label="发布者">
-              <el-input v-model="publicform.name"></el-input>
+              <el-input v-model="publicform.id"></el-input>
             </el-form-item>
 
             <el-form-item label="内容">
@@ -31,20 +31,42 @@
           <el-table-column property="name" label="发布者" width="150"></el-table-column>
           <el-table-column property="content" label="内容"></el-table-column>
         </el-table>
-      </el-dialog> -->
-
+      </el-dialog>-->
       <el-col :span="14">
         <el-card class="box-card" shadow="hover">
           <div slot="header" class="clearfix">
             <span>发布记录</span>
-
           </div>
-        <el-table :data="messagepanel">
-          <el-table-column property="startdate" label="日期" width="150"></el-table-column>
-          <el-table-column property="title" label="标题" width="150"></el-table-column>
-          <el-table-column property="name" label="发布者" width="150"></el-table-column>
-          <el-table-column property="content" label="内容"></el-table-column>
-        </el-table>
+                    <!-- <el-table :data="messagepanel.slice((currentPage-1)*pagesize,currentPage*pagesize)"> -->
+
+          <el-table :data="messagepanel">
+            <el-table-column property="startdate" label="日期" align="center"></el-table-column>
+            <el-table-column property="title" label="标题" align="center"></el-table-column>
+            <el-table-column property="name" label="发布者" align="center"></el-table-column>
+            <el-table-column property="content" label="内容" align="center"></el-table-column>
+            <el-table-column label="操作" align="center">
+              <template slot-scope="scope">
+                <el-button
+                  size="small"
+                  @click="handleEdit(scope.$index, scope.row,scope.row.cjrid)"
+                >编辑</el-button>
+                <el-button
+                  size="small"
+                  type="danger"
+                  @click="handleDelete(scope.$index, scope.row,scope.row.cjrid)"
+                >删除</el-button>
+              </template>
+            </el-table-column>
+          </el-table>
+           <el-pagination
+      :current-page="currentPage"
+      :page-sizes="[5,10]"
+      :page-size="pagesize"
+      :total="total"
+      layout="total, sizes, prev, pager, next, jumper"
+      @size-change="handleSizeChange"
+      @current-change="handleCurrentChange"
+    />
         </el-card>
       </el-col>
     </el-row>
@@ -57,33 +79,85 @@
 export default {
   data () {
     return {
+      QueryUrl: this.$store.state.BaseUrl,
       loading: true,
       // time: new Date(),
       dialogTableVisible: false,
       labelPosition: 'right',
-      messagepanel: '',
+      messagepanel: [],
       publicform: {
         title: '',
-        name: '',
+        id: '',
         content: ''
       }
     }
   },
   methods: {
+    // 发布公告
     onSubmit () {
-      console.log('标题：' + this.publicform.title +
-       '内容' + this.publicform.content)
+      let _this = this
+
+      let ggbt = this.publicform.title
+      let ggnr = this.publicform.content
+      let cjrid = this.publicform.id
+      console.log(cjrid)
+      this.$axios
+        .post(this.QueryUrl + '/notice/addnotice', {
+          ggbt,
+          ggnr,
+          cjrid
+        })
+        .then(res => {
+          console.log(res)
+          _this.msgalert(res, _this)
+        })
+        .catch(e => {
+          console.log(e)
+        })
+      // console.log('标题：' + this.publicform.title +
+      //  '内容' + this.publicform.content)
+    },
+    // 编辑公告
+    handleEdit (cjrid) {
+      // let _this = this
+      // this.$axios
+      //   .post(this.QueryUrl + '/notice/addnotice', {
+      //     ggbt,
+      //     ggnr,
+      //     cjrid
+      //   })
+      //   .then(res => {
+      //     console.log(res)
+      //     _this.msgalert(res, _this)
+      //   })
+      //   .catch(e => {
+      //     console.log(e)
+      //   })
     },
     httpGet () {
       let _this = this
-      this.$axios({
-        url: 'https://www.easy-mock.com/mock/5c0c79f91b4f006bfb76b9b5/example/getmessagepanel',
-        method: 'get'
-
-      }).then(res => {
-        this.messagepanel = res.data.messagepanel
-        _this.loading = false
-      })
+      this.$axios
+        .post(this.$store.state.BaseUrl + '/notice/querynotice')
+        .then(res => {
+          _this.loading = false
+          _this.msgalert(res, _this)
+          // this.messagepanel = res.data.messagepanel
+          console.log(res)
+        })
+    },
+    // 封装用户提示
+    msgalert (res, _this) {
+      if (res.data.code === 200) {
+        this.$message({
+          message: res.data.msg,
+          type: 'success'
+        })
+        this.httpGet()
+      } else {
+        // 提示用户
+        console.log(res.data.msg)
+        this.$message.error(res.data.msg)
+      }
     }
   },
   mounted () {
@@ -94,7 +168,6 @@ export default {
     //   this.messagepanel = res.messagepanel
     // })
   }
-
 }
 </script>
 <style scoped lang="scss">
