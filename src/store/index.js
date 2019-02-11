@@ -11,14 +11,6 @@ import Vuex from 'vuex'
 // // 一定要声明使用插件
 Vue.use(Vuex)
 
-// // 把 store 对象提供给 “store” 选项，这可以把 store 的实例注入所有的子组件
-// export default new Vuex.Store({
-//   state,
-//   mutations,
-//   actions,
-//   getters
-// })
-
 /**
  * Vuex全局状态管理
  * @param options {Array} 用于渲染tabs的数组
@@ -26,10 +18,20 @@ Vue.use(Vuex)
 const store = new Vuex.Store({
   state: {
     bseurl: 'https://www.easy-mock.com/mock/5c0c79f91b4f006bfb76b9b5/example',
-    BaseUrl: 'http://172.16.0.67:8088/farmbackstage',
+    BaseUrl: 'http://172.16.0.67:8088/farmbackstage', // 'http://wysn.fancybull.cn/farmbackstage',
+    xgrid: 0, // 修改人id
+    publickey: `MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAzu6QebxqBf+OzDj9pQ9L
+    7zi4+1NdXhvMcIJFlz1yjREVQtbGfblnY0VDM3vePdLS3rwSK/QCQTS6ZtMqGSa+
+    mbwl16mUV+0HaUXWVVBbarx8qO5EMgR4H9E/LCWJYxfGeaz8AD/KYgKzOPH+Yopj
+    O+VPWz93t94qT2JPxnMHiJCuO0XcBXNJ6O6HY7QWEzWYaC1OkmJyjOjwJ+S5datu
+    1ZArXoTq/R07IZjpk5IaYyLyZ9dRsAfJrNzQD27PWhzNZJ0mpFNv0bkxkSEXLbke
+    9PmTmtznsSpi8OJWnoV9pc4sVcsuXmHjaI1FIGGjOUnyV9X9agmWSm1ZfkOHUnmF
+    6QIDAQAB`, // 设置公钥
+
+    rootArry: [], // 全局菜单
     options: [],
-    activeIndex: '/mian',
-    userInfo: {}
+    activeIndex: '/mian'
+    // userInfo: {}
   },
   mutations: {
     // 添加tabs

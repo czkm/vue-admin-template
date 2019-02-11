@@ -1,6 +1,38 @@
 <!--  -->
 <template>
+
   <div v-loading="loading">
+     <el-row>
+      <el-col :span="24">
+        <el-form :inline="true" :model="searchform" class="demo-form-inline">
+          <el-form-item label="文章标题">
+            <el-input v-model="searchform.ggbt" placeholder="标题"></el-input>
+          </el-form-item>
+          <el-form-item label="创建人员">
+            <el-input v-model="searchform.cjr" placeholder="创建人员"></el-input>
+          </el-form-item>
+          <el-form-item label="选择时间">
+            <el-col :span="15">
+              <el-date-picker
+                v-model="searchform.cjsj"
+                value-format="yyyy-MM-dd"
+                type="daterange"
+                range-separator="至"
+                start-placeholder="开始日期"
+                end-placeholder="结束日期"
+              ></el-date-picker>
+            </el-col>
+          </el-form-item>
+
+          <el-form-item>
+            <el-button type="primary" @click="handleSearch">查询</el-button>
+            <el-button type="danger" @click="handleclear">清除</el-button>
+          </el-form-item>
+        </el-form>
+      </el-col>
+    </el-row>
+    <!-- 发布-->
+
     <el-row :gutter="20">
       <el-col :span="8">
         <div class="messagecenter">
@@ -8,9 +40,6 @@
             <el-form-item label="发布公告"></el-form-item>
             <el-form-item label="标题">
               <el-input v-model="publicform.title"></el-input>
-            </el-form-item>
-            <el-form-item label="发布者">
-              <el-input v-model="publicform.id"></el-input>
             </el-form-item>
 
             <el-form-item label="内容">
@@ -23,50 +52,78 @@
           </el-form>
         </div>
       </el-col>
+<!-- 发布编辑 -->
+     <el-dialog title="公告编辑" :visible.sync="Editdiolog">
+      <el-form :model="Editform">
+        <el-form-item class="formitem" label="创建时间" >
 
-      <!-- <el-dialog title="发布详情" :visible.sync="dialogTableVisible">
-        <el-table :data="messagepanel">
-          <el-table-column property="startdate" label="日期" width="150"></el-table-column>
-          <el-table-column property="title" label="标题" width="150"></el-table-column>
-          <el-table-column property="name" label="发布者" width="150"></el-table-column>
-          <el-table-column property="content" label="内容"></el-table-column>
-        </el-table>
-      </el-dialog>-->
-      <el-col :span="14">
+          <el-tag type="info">{{Editform.cjsj}}</el-tag>
+        </el-form-item>
+        <el-form-item class="formitem"  label="公告标题" >
+          <el-input class="newinput" v-model="Editform.ggbt"></el-input>
+        </el-form-item>
+        <el-form-item label="公告内容" >
+           <el-input type="textarea" v-model="Editform.ggnr"></el-input>
+
+        </el-form-item>
+
+         </el-form>
+          <div slot="footer" class="dialog-footer">
+        <el-button @click="Editformcancel()">取 消</el-button>
+        <el-button type="primary" @click="Editformupdate()">确 定</el-button>
+
+      </div>
+      </el-dialog>
+
+      <!-- 公告详情 -->
+      <el-col :span="15">
         <el-card class="box-card" shadow="hover">
           <div slot="header" class="clearfix">
             <span>发布记录</span>
           </div>
-                    <!-- <el-table :data="messagepanel.slice((currentPage-1)*pagesize,currentPage*pagesize)"> -->
+          <!-- <el-table :data="tableData.slice((currentPage-1)*pagesize,currentPage*pagesize)"> -->
+          <el-table :data="tableData">
+            <el-table-column type="expand" label="点击查看内容" width="200">
+              <template slot-scope="props">
+                <el-form label-position="left" inline class="demo-table-expand">
+                  <el-form-item label="内容">
+                    <span>{{ props.row.ggnr }}</span>
+                  </el-form-item>
+                </el-form>
+              </template>
+            </el-table-column>
+            <el-table-column label="有效标志" width="100">
+              <template slot-scope="scope">
+                <i v-if="scope.row.yxbz == 1">有效</i>
+                <i v-else>无效</i>
+              </template>
+            </el-table-column>
 
-          <el-table :data="messagepanel">
-            <el-table-column property="startdate" label="日期" align="center"></el-table-column>
-            <el-table-column property="title" label="标题" align="center"></el-table-column>
-            <el-table-column property="name" label="发布者" align="center"></el-table-column>
-            <el-table-column property="content" label="内容" align="center"></el-table-column>
+            <el-table-column property="cjsj" label="日期" align="center"></el-table-column>
+            <el-table-column property="ggbt" label="标题" align="center"></el-table-column>
+            <el-table-column property="cjr" label="发布者" align="center"></el-table-column>
+
             <el-table-column label="操作" align="center">
               <template slot-scope="scope">
                 <el-button
                   size="small"
-                  @click="handleEdit(scope.$index, scope.row,scope.row.cjrid)"
+              @click="handleEdit(scope.$index, scope.row,scope.row.ggid)"
+
                 >编辑</el-button>
-                <el-button
-                  size="small"
-                  type="danger"
-                  @click="handleDelete(scope.$index, scope.row,scope.row.cjrid)"
-                >删除</el-button>
+                <el-button size="small" type="danger" @click="handleDelete(scope.row.ggid)">删除</el-button>
               </template>
             </el-table-column>
           </el-table>
-           <el-pagination
-      :current-page="currentPage"
-      :page-sizes="[5,10]"
-      :page-size="pagesize"
-      :total="total"
-      layout="total, sizes, prev, pager, next, jumper"
-      @size-change="handleSizeChange"
-      @current-change="handleCurrentChange"
-    />
+          <el-pagination
+           :clearable= false
+            :current-page="currentPage"
+            :page-sizes="[5,10]"
+            :page-size="pagesize"
+            :total="total"
+            layout="total, sizes, prev, pager, next, jumper"
+            @size-change="handleSizeChange"
+            @current-change="handleCurrentChange"
+          />
         </el-card>
       </el-col>
     </el-row>
@@ -79,94 +136,169 @@
 export default {
   data () {
     return {
+      path: 'MessageCenter',
       QueryUrl: this.$store.state.BaseUrl,
       loading: true,
       // time: new Date(),
-      dialogTableVisible: false,
+      total: 0, // 总数
+      currentPage: 1, // 初始页
+      pagesize: 10, //    每页的数据
+      Editdiolog: false,
       labelPosition: 'right',
-      messagepanel: [],
+      tableData: [],
+      // 发布框
       publicform: {
         title: '',
-        id: '',
+        // id: '',
         content: ''
+      },
+      // 搜索
+      searchform: {
+        ggbt: '',
+        cjsj: '',
+        cjr: ''
+      },
+      // 编辑框
+      Editform: {
+        ggbt: '',
+        cjr: '0',
+        ggnr: '',
+        ggid: ''
       }
     }
   },
   methods: {
+
+    // 控制搜索
+    handleSearch () {
+      let _this = this
+      this.loading = true
+      let ggbt = this.searchform.ggbt
+      let cjr = this.searchform.cjr
+      let starttime = this.searchform.cjsj[0]
+      let endtime = this.searchform.cjsj[1]
+      console.log('submit!')
+      this.$Haxios(this.QueryUrl + '/notice/querynotice', {
+        ggbt,
+        cjr,
+        starttime,
+        endtime
+      }, this.path, this.getCookie('token'))
+        .then(res => {
+          console.log(res)
+          _this.tableData = res.data.rows
+          _this.loading = false
+          _this.total = res.data.total
+          _this.page = res.data.page
+          _this.limit = res.data.limit
+        })
+    },
+    handleclear () {
+      this.searchform = {
+        ggbt: '',
+        cjsj: '',
+        cjr: ''
+      }
+      this.handleDataGet()
+    },
+    handleDataGet () {
+      this.PageAxios(1, this.pagesize, this.QueryUrl + '/notice/querynotice', this.path, this.getCookie('token'), this.searchform)
+    },
+    // 控制页面页数
+    handleSizeChange: function (size) {
+      this.PageAxios(1, size, this.QueryUrl + '/notice/querynotice', this.path, this.getCookie('token'), this.searchform)
+    },
+    // 点击第几页
+    handleCurrentChange: function (currentPage) {
+      this.PageAxios(currentPage, this.pagesize, this.QueryUrl + '/notice/querynotice', this.path, this.getCookie('token'), this.searchform)
+    },
+
     // 发布公告
     onSubmit () {
       let _this = this
 
       let ggbt = this.publicform.title
       let ggnr = this.publicform.content
-      let cjrid = this.publicform.id
+      let cjrid = 0
       console.log(cjrid)
-      this.$axios
-        .post(this.QueryUrl + '/notice/addnotice', {
-          ggbt,
-          ggnr,
-          cjrid
-        })
+      this.$Haxios(this.QueryUrl + '/notice/addnotice', {
+        ggbt,
+        ggnr,
+        cjrid
+      }, this.path, this.getCookie('token'))
         .then(res => {
-          console.log(res)
-          _this.msgalert(res, _this)
+          // 判断用户是否提交成功
+          if (res.data.code === 200) {
+            console.log(res.data)
+
+            _this.handleDataGet()
+            _this.msgalert(res)
+            _this.publicform = {
+              title: '',
+              // id: '',
+              content: ''
+            }
+          } else {
+            _this.msgalert(res)
+          }
         })
         .catch(e => {
           console.log(e)
         })
-      // console.log('标题：' + this.publicform.title +
-      //  '内容' + this.publicform.content)
+    },
+    Editformcancel () {
+      this.Editdiolog = false
     },
     // 编辑公告
-    handleEdit (cjrid) {
-      // let _this = this
-      // this.$axios
-      //   .post(this.QueryUrl + '/notice/addnotice', {
-      //     ggbt,
-      //     ggnr,
-      //     cjrid
-      //   })
-      //   .then(res => {
-      //     console.log(res)
-      //     _this.msgalert(res, _this)
-      //   })
-      //   .catch(e => {
-      //     console.log(e)
-      //   })
+    handleEdit (index, row, ggid) {
+      console.log(ggid)
+      this.Editform = this.tableData[index]
+      this.Editform.ggid = ggid
+      this.Editdiolog = true
     },
-    httpGet () {
+    // 提交编辑
+    Editformupdate () {
+      console.log(this.Editform.cjsj)
       let _this = this
-      this.$axios
-        .post(this.$store.state.BaseUrl + '/notice/querynotice')
+      let ggid = this.Editform.ggid
+      let ggbt = this.Editform.ggbt
+      let ggnr = this.Editform.ggnr
+
+      this.$Haxios
+        .post(this.QueryUrl + '/notice/editnotice', {
+          ggbt,
+          ggnr,
+          ggid
+
+        }, this.path, this.getCookie('token'))
         .then(res => {
-          _this.loading = false
-          _this.msgalert(res, _this)
-          // this.messagepanel = res.data.messagepanel
           console.log(res)
+          _this.handleDataGet()
+          _this.msgalert(res)
+        })
+        .catch(e => {
+          console.log(e)
         })
     },
-    // 封装用户提示
-    msgalert (res, _this) {
-      if (res.data.code === 200) {
-        this.$message({
-          message: res.data.msg,
-          type: 'success'
+    // 删除公告
+    handleDelete (ggid) {
+      let _this = this
+      this.$Haxios(this.$store.state.BaseUrl + '/notice/delnotice', { ggid }, this.path, this.getCookie('token'))
+        .then(res => {
+          console.log(res.data)
+          _this.handleDataGet()
+          _this.msgalert(res)
         })
-        this.httpGet()
-      } else {
-        // 提示用户
-        console.log(res.data.msg)
-        this.$message.error(res.data.msg)
-      }
+        .catch(e => {
+          console.log(e)
+        })
     }
+
   },
   mounted () {
     this.$nextTick(() => {
-      this.httpGet()
+      this.handleDataGet()
     })
-    // reqMessage().then((res) => {
-    //   this.messagepanel = res.messagepanel
-    // })
   }
 }
 </script>
@@ -178,7 +310,7 @@ export default {
   margin: 0 auto;
 }
 .box-card {
-  width: 800px;
+  width: 1000px;
   float: right;
 }
 </style>

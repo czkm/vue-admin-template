@@ -18,6 +18,7 @@
     "echarts": "^4.2.0-rc.2",
     "element-ui": "^2.4.11",
     "font-awesome": "^4.7.0",
+    "jsencrypt": "^3.0.0-rc.1",
     "node-sass": "^4.11.0",
     "sass-loader": "^7.1.0",
     "scss-loader": "0.0.1",

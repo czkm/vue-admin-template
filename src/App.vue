@@ -7,7 +7,11 @@
 
 <script>
 export default {
-  name: 'App'
+  name: 'App',
+  //   创建时就填充路由
+  created () {
+
+  }
 }
 </script>
 

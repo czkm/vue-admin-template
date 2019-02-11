@@ -68,6 +68,7 @@ export default {
   name: 'hello',
   data () {
     return {
+      path: 'FinancialManage',
       QueryUrl: this.$store.state.BaseUrl + '/chart/financial',
       total: 0, // 总收入
       today: 0, // 今日收入
@@ -189,13 +190,17 @@ export default {
       let month = (this.month).substring(0, 7)
       console.log(month)
       let _this = this
-      this.$axios.post(this.QueryUrl, {month}
+
+      // this.$axios.post(this.QueryUrl, {month}
+      this.$Haxios(this.QueryUrl, {month}, this.path, this.getCookie('token')
       ).then(res => {
+        console.log(res)
         // 判断回调有没有值
         if (res.data.data.length === 0) {
           _this.drawLine('该月份暂无数据')
+          _this.loading = false
         } else {
-          console.log(res)
+          console.log('else' + res)
           let text = res.data.text
           let ARR = res.data.data
           let dataAxis = []
@@ -206,6 +211,7 @@ export default {
           console.log('total' + total + 'today' + today + 'monthCount' + monthCount)
           _this.total = total
           _this.today = today
+
           // 判断月份
           if (monthCount) {
             _this.monthCount = monthCount
@@ -224,6 +230,9 @@ export default {
           _this.loading = false
         }
       })
+        .catch(e => {
+          console.log(e)
+        })
     }
   }
 

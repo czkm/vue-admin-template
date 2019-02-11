@@ -6,7 +6,8 @@
             <el-col :span="10" class="logo" :class="collapsed?'logo-collapse-width':'logo-width'">{{collapsed?'':sysName}}</el-col>
             <el-col :span="5">
         <div class="tools" @click.prevent="collapseFun">
-          <i class="fa fa-align-justify"></i>
+          <i v-if="collapsed" class="fa el-icon-caret-right"></i>
+           <i v-else class="fa el-icon-caret-left"></i>
                 </div>
             </el-col>
             <el-col :span="5">
@@ -20,7 +21,7 @@
                     <el-dropdown-menu slot="dropdown">
                         <el-dropdown-item>我的消息</el-dropdown-item>
                         <el-dropdown-item>设置</el-dropdown-item>
-                        <el-dropdown-item divided @click.native="logoutFun">退出登录</el-dropdown-item>
+                        <el-dropdown-item divided @click.native="logout()">退出登录</el-dropdown-item>
                     </el-dropdown-menu>
                 </el-dropdown>
             </el-col>
@@ -28,46 +29,47 @@
   <!-- <Sidebar :menuList="menuList"/> -->
 
     <el-col :span="24" class="main">
-   <aside :class="collapsed?'menu-collapsed':'menu-expanded'" class="el-col-4">
+   <aside :class="collapsed?'menu-collapsed':'menu-expanded'" class="el-col-6">
 
         <!--左侧导航菜单-->
 
        <el-menu  class="el-menu-vertical-demo" :collapse="collapsed" :unique-opened ="true" :router ="true" >
-           <el-menu-item :index="'/'+child1.url" v-for="child1 in menuList" :key="child1.id" v-if="!child1.childNode">
+           <el-menu-item :index="'/'+child1.location" v-for="child1 in menuList" :key="child1.id" v-if="!child1.children">
                 <i :class="child1.iconCls" style="font-size: 16px;"></i>
-                <span slot="title">{{child1.name}}</span>
+                <span slot="title">{{child1.title}}</span>
             </el-menu-item>
                 <!-- 1级菜单 -有子节点-->
-            <el-submenu :index="'/'+child1.url" v-for="child1 in menuList" :key="child1.id" v-if="child1.childNode">
+            <el-submenu :index="'/'+child1.location" v-for="child1 in menuList" :key="child1.id" v-if="child1.children">
 
                 <!-- 2级菜单 无子节点-->
-                <el-menu-item :index="'/'+child2.url" v-for="child2 in child1.childNode" :key="child2.id" v-if="!child2.childNode" class="menuTwo"><i :class="child2.iconCls"></i>
-                {{child2.name}}
+                <el-menu-item :index="'/'+child2.location" v-for="child2 in child1.children" :key="child2.id" v-if="!child2.children" class="menuTwo"><i :class="child2.iconCls"></i>
+                {{child2.title}}
                 </el-menu-item>
-                    <template slot="title" v-if="child1.childNode">
+                    <template slot="title" v-if="child1.children">
                         <i :class="child1.iconCls"></i>
-                        <span slot="title">{{child1.name}}</span>
+                        <span slot="title">{{child1.title}}</span>
                     </template>
 
             <!-- 判断二级 有子节点  eslint-disable -->
-                <el-submenu :index="'/'+child2.url" v-for="child2 in child1.childNode" :key="child2.id" v-if="child2.childNode" class="menuTwo">
+                <el-submenu :index="'/'+child2.location" v-for="child2 in child1.children" :key="child2.id" v-if="child2.children" class="menuTwo">
                         <template slot="title">
                           <i :class="child2.iconCls"></i>
-                          <!-- <span slot="title">{{child2.name}}</span> -->
+                          <!-- <span slot="title">{{child2.title}}</span> -->
                         </template>
                 <!-- 三级菜单     -->
                     <el-menu-item-group class="menuThree">
-                        <el-menu-item :index="'/'+child3.url" v-for="child3 in child2.childNode" :key="child3.id" v-if="!child3.childNode"  style="font-size: 16px"><i :class="child3.iconCls">{{child3.name}}</i></el-menu-item>
+                        <el-menu-item :index="'/'+child3.location" v-for="child3 in child2.children" :key="child3.id" v-if="!child3.children"  style="font-size: 16px"><i :class="child3.iconCls">{{child3.title}}</i></el-menu-item>
                     </el-menu-item-group>
             </el-submenu>
         </el-submenu>
        </el-menu>
+       
      </aside>
 
      <section class="content-container">
        <div class="grid-content bg-purple-light">
          <el-col :span="24" class="breadcrumb-container">
-           <strong class="title">{{$route.name}}</strong>
+           <!-- <strong class="title">{{$route.name}}</strong> -->
            <!-- 面包屑组件 -->
            <!-- <el-breadcrumb separator="/" class="breadcrumb-inner">
              <el-breadcrumb-item v-for="item in $route.matched" :key="item.path" :to="{path: item.path}">{{ item.name }}</el-breadcrumb-item>
@@ -109,202 +111,256 @@ export default {
     return {
       sysUserAvatar:
         'https://y.gtimg.cn/music/photo_new/T001R300x300M000002eEEYT4ACDdX.jpg',
-      sysName: 'VueDemo',
+      sysName: '五蕴神农',
+      QueryUrl: this.$store.state.BaseUrl,
       sysTitle: '玩开心农场吃有机蔬菜',
       sysUserName: 'admin',
       collapsed: false,
+      rootArry: this.$store.state.rootArry,
       menuList: [
         {
-          name: '首页',
+          title: '首页',
           pid: 0,
           id: 1,
-          url: 'main',
+          location: 'main',
           iconCls: 'fa fa-id-card-o'
         },
         {
-          name: 'app用户管理',
+          title: 'app用户管理',
           pid: 0,
           id: 10,
-          url: 'AppUsermanage',
+          location: 'AppUsermanage',
           iconCls: 'fa fa-id-card-o'
         },
         {
-          name: '用户中心',
+          title: '用户中心',
           pid: 0,
           id: 2,
-          url: 'UserCenter',
+          location: 'UserCenter',
           iconCls: 'fa el-icon-service',
-          childNode: [
+          children: [
             {
-              name: '用户管理',
+              title: '用户管理',
               pid: 2,
               id: 21,
-              url: 'UserManage',
+              location: 'UserManage',
               iconCls: 'fa el-icon-document'
-              // childNode: [
+              // children: [
               //   {
-              //     name: '实时监测1-1-1',
+              //     title: '实时监测1-1-1',
               //     pid: 21,
               //     id: 212,
-              //     url: 'test11',
+              //     location: 'test11',
               //     iconCls: 'fa el-icon-bell'
               //   },
               //   {
-              //     name: '实时监测1-1-2',
+              //     title: '实时监测1-1-2',
               //     pid: 21,
               //     id: 213,
-              //     url: 'test12',
+              //     location: 'test12',
               //     iconCls: 'fa el-icon-mobile-phone'
               //   }
               // ]
             },
             {
-              name: '用户设置',
+              title: '用户设置',
               pid: 2,
               id: 22,
-              url: 'UserOption',
+              location: 'UserOption',
               iconCls: 'fa el-icon-goods'
             }
           ]
         },
         {
-          name: '订单中心',
+          title: '订单中心',
           pid: 0,
           id: 3,
-          url: 'OrderCenter',
+          location: 'OrderCenter',
           iconCls: 'fa el-icon-news',
-          childNode: [
+          children: [
             {
-              name: '订单管理',
+              title: '订单管理',
               pid: 3,
               id: 31,
               iconCls: 'fa el-icon-message',
-              url: 'OrderManage'
-              // childNode: [
+              location: 'OrderManage'
+              // children: [
               //   {
-              //     name: '巡查详情',
+              //     title: '巡查详情',
               //     pid: 31,
               //     id: 311,
-              //     url: 'add11'
+              //     location: 'add11'
               //   },
               //   {
-              //     name: '巡查统计',
+              //     title: '巡查统计',
               //     pid: 31,
               //     id: 312,
-              //     url: 'add12'
+              //     location: 'add12'
               //   }
               // ]
             },
             {
-              name: '订单详情',
+              title: '订单详情',
               pid: 3,
               id: 32,
               iconCls: 'fa el-icon-edit',
-              url: 'OrderDetail'
+              location: 'OrderDetail'
 
-              //  childNode: []
+              //  children: []
             }
             // {
-            //   name: '消控up',
+            //   title: '消控up',
             //   pid: 3,
             //   id: 33,
-            //   url: 'up1'
-            //   //  childNode: []
+            //   location: 'up1'
+            //   //  children: []
             // }
           ]
         },
         {
-          name: '种植中心',
+          title: '种植中心',
           pid: 0,
           id: 4,
-          url: 'PlanCenter',
+          location: 'PlanCenter',
           iconCls: 'fa el-icon-time'
         },
         {
-          name: '配送中心',
+          title: '配送中心',
           pid: 0,
           id: 44,
-          url: 'DistributionCenter',
+          location: 'DistributionCenter',
           iconCls: 'fa el-icon-setting'
         },
         {
-          name: '土地中心',
+          title: '土地中心',
           pid: 0,
           id: 5,
-          url: 'LandCenter',
+          location: 'LandCenter',
           iconCls: 'fa el-icon-printer',
-          childNode: [
+          children: [
             {
-              name: '土地管理',
+              title: '土地管理',
               pid: 5,
               id: 52,
-              url: 'LandManage',
+              location: 'LandManage',
               iconCls: 'fa el-icon-sort'
             },
             {
-              name: '土地详情',
+              title: '土地规划',
               pid: 5,
               id: 51,
-              url: 'LandDetail',
+              location: 'LandDetail',
               iconCls: 'fa el-icon-document'
             }
           ]
         },
         {
-          name: '消息中心',
+          title: '消息中心',
           pid: 0,
           id: 6,
-          url: 'MessageManage',
+          location: 'MessageManage',
           iconCls: 'fa el-icon-refresh',
-          childNode: [
+          children: [
             {
-              name: '消息管理',
+              title: '消息管理',
               pid: 6,
               id: 61,
-              url: 'MessageCenter',
+              location: 'MessageCenter',
               iconCls: 'fa el-icon-sort'
             },
             {
-              name: '轮播管理',
+              title: '轮播管理',
               pid: 6,
               id: 62,
-              url: 'SliderManage',
+              location: 'SliderManage',
               iconCls: 'fa el-icon-document'
             }
           ]
         },
         {
-          name: '角色管理',
+          title: '角色管理',
           pid: 0,
           id: 7,
-          url: 'RoleManage',
+          location: 'RoleManage',
           iconCls: 'fa el-icon-info'
         },
         {
-          name: '财务管理',
+          title: '财务管理',
           pid: 0,
           id: 8,
-          url: 'FinancialManage',
+          location: 'FinancialManage',
           iconCls: 'fa el-icon-warning'
         },
         {
-          name: '蔬菜管理',
+          title: '蔬菜中心',
           pid: 0,
           id: 9,
-          url: 'VegetableManage',
-          iconCls: 'fa el-icon-document'
+          location: 'VegetableCenter',
+          iconCls: 'fa el-icon-refresh',
+          children: [
+            {
+              title: '蔬菜管理',
+
+              location: 'VegetableManage',
+              iconCls: 'fa el-icon-document'
+            },
+            {
+              title: '蔬菜略缩图',
+
+              location: 'VegetableMiniatures',
+              iconCls: 'fa el-icon-circle-plus'
+            }
+          ]
         }
+
       ]
+      // menuList: [
+      //   {
+      //     title: '首页',
+
+      //     location: 'main',
+      //     iconCls: 'fa fa-id-card-o'
+      //   },
+      //   {
+      //     title: 'app用户管理',
+
+      //     location: 'AppUsermanage',
+      //     iconCls: 'fa fa-id-card-o'
+      //   },
+      //   {
+      //     title: '用户中心',
+
+      //     location: 'UserCenter',
+      //     iconCls: 'fa el-icon-service',
+      //     children: [
+      //       {
+      //         title: '用户管理',
+
+      //         location: 'UserManage',
+      //         iconCls: 'fa el-icon-document'
+      //       }]
+      //   }
+      // ]
     }
   },
   mounted () {
-    var user = sessionStorage.getItem('user')
-    if (user) {
-      user = JSON.parse(user)
-      this.sysUserName = user.username || ''
+    let userneme = this.getCookie('sjhm')
+    if (userneme) {
+      this.sysUserName = userneme || ''
     }
+    this.optionMeun()
   },
   methods: {
+    // 配置菜单
+    optionMeun () {
+      // 判断菜单是否有值
+      if (this.rootArry.length) {
+        console.log('菜单有值')
+        this.menuList = this.rootArry
+      } else {
+        console.log('无值')
+      }
+    },
     // 折叠导航栏
     collapseFun: function () {
       this.collapsed = !this.collapsed
@@ -315,16 +371,20 @@ export default {
       )[0].style.display = status ? 'block' : 'none'
     },
     // 退出登录
-    logoutFun: function () {
-      var _this = this
-      this.$confirm('确认退出吗?', '提示', {
-        // type: 'warning'
-      })
-        .then(() => {
-          sessionStorage.removeItem('user')
-          _this.$router.push('/login')
+    logout: function () {
+      let _this = this
+      this.$Haxios(this.QueryUrl + '/admin/logout', {}, null, this.getCookie('token'))
+
+        .then((res) => {
+          console.log(res)
+          _this.msgalert(res)
+          if (res.data.code === 200) {
+            _this.$router.push('/login')
+          }
         })
-        .catch(() => {})
+        .catch((e) => {
+          console.log(e)
+        })
     },
     // tab切换时，动态的切换路由
     tabClick (tab) {

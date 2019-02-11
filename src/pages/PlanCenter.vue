@@ -142,7 +142,6 @@ export default {
   mounted () {
     this.$nextTick(() => {
       this.httpGet()
-      this.testaxios()
     })
   },
   // created () {

@@ -12,6 +12,7 @@
           <el-form-item label="选择时间">
             <el-col :span="15">
               <el-date-picker
+                :clearable= false
                 v-model="searchform.time"
                 value-format="yyyy-MM-dd"
                 type="daterange"
@@ -30,7 +31,7 @@
       </el-col>
     </el-row>
     <el-table
-      :data="tableData.slice((currentPage-1)*pagesize,currentPage*pagesize)"
+      :data="tableData"
       border
       style="width: 100%"
     >
@@ -56,13 +57,17 @@
 </template>
 
 <script>
+// import Headxiaos from '../api/ajax.js'
+
 export default {
   data () {
     return {
+      // searchData: {}, // 传递后台查询对象
+
+      path: 'AppUsermanage',
       loading: true,
       QueryUrl: this.$store.state.BaseUrl + '/userinfo/queryuser',
       total: 0,
-      search: '',
       currentPage: 1, // 初始页
       pagesize: 5, //    每页的数据
       tableData: [],
@@ -74,82 +79,62 @@ export default {
     }
   },
   methods: {
-    // 传第几页，页数限制
-    PageAxios (page, limit) {
-      this.loading = true
-      let _this = this
-      this.$axios
-        .post(this.QueryUrl, {
-          page,
-          limit
-        })
-        .then(res => {
-          console.log(res.data)
-          console.log(res.data.rows)
-          let total = res.data.total // 返回页面总数
-          let limit = res.data.limit // 返回页数限制
-          // let page = res.data.page // 返回第几页
-          _this.tableData = res.data.rows
-          // _this.currentPage = page // 初始页
-          _this.total = total // 获取页面总数
-          _this.pagesize = limit // 初始页
-          // 停止加载动画
-          _this.loading = false
-        })
-    },
+
     handleSearch () {
       let _this = this
       this.loading = true
+
       let nc = _this.searchform.nc
       let sjhm = _this.searchform.sjhm
       let starttime = _this.searchform.time[0]
       let endtime = _this.searchform.time[1]
-      console.log('submit!')
-      this.$axios
-        .post(this.QueryUrl, {
-          nc,
-          sjhm,
-          starttime,
-          endtime
-        })
-        .then(res => {
-          console.log(res)
-
+      // 请求头带参
+      this.$Haxios(this.QueryUrl, {
+        nc,
+        sjhm,
+        starttime,
+        endtime
+      }, this.path, this.getCookie('token'))
+        .then((res) => {
+          console.log(res.rows)
           _this.tableData = res.data.rows
           _this.loading = false
+          _this.total = res.data.total
+          _this.page = res.data.page
+          _this.limit = res.data.limit
+        })
+        .catch(e => {
+          console.log(e)
         })
     },
     handleclear () {
-      this.searchform.nc = ''
-      this.searchform.sjhm = ''
-      this.searchform.time = ''
+      this.searchform = {
+        nc: '',
+        sjhm: '',
+        time: ''
+      }
       this.handleDataGet()
     },
 
-    httpGet () {
-      this.handleDataGet()
-    },
     // 页面加载获取初始值
     handleDataGet () {
-      this.PageAxios(1, this.pagesize)
+      // 页面 限制 路径 路由路径 token
+
+      this.PageAxios(1, this.pagesize, this.QueryUrl, this.path, this.getCookie('token'), this.searchform)
     },
     // 控制页面页数
     handleSizeChange: function (size) {
-      // this.pagesize = size
-      // console.log(this.pagesize)
-      this.PageAxios(1, size)
+      this.PageAxios(1, size, this.QueryUrl, this.path, this.getCookie('token'), this.searchform)
     },
     // 点击第几页
     handleCurrentChange: function (currentPage) {
-      // let _this = this
-      console.log(currentPage)
-      this.PageAxios(currentPage, this.pagesize)
+      this.PageAxios(currentPage, this.pagesize, this.QueryUrl, this.path, this.getCookie('token'), this.searchform)
     }
   },
 
   mounted () {
     this.$nextTick(() => {
-      this.httpGet()
+      this.handleDataGet()
     })
   }
 }

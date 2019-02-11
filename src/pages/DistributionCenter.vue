@@ -142,7 +142,6 @@ export default {
       //   this.tableData = res.data.tableData
       //   // console.log(res)
       // })
-
     }
 
   }
