@@ -20,7 +20,7 @@
                     <span class="el-dropdown-link userinfo-inner"><img class="userimg" :src="this.sysUserAvatar" /> {{sysUserName}}</span>
                     <el-dropdown-menu slot="dropdown">
                         <el-dropdown-item>我的消息</el-dropdown-item>
-                        <el-dropdown-item>设置</el-dropdown-item>
+                        <el-dropdown-item @click.native="useroption()">设置</el-dropdown-item>
                         <el-dropdown-item divided @click.native="logout()">退出登录</el-dropdown-item>
                     </el-dropdown-menu>
                 </el-dropdown>
@@ -53,9 +53,9 @@
             <!-- 判断二级 有子节点  eslint-disable -->
                 <el-submenu :index="'/'+child2.location" v-for="child2 in child1.children" :key="child2.id" v-if="child2.children" class="menuTwo">
                         <template slot="title">
-                          <i :class="child2.iconCls"></i>
-                          <!-- <span slot="title">{{child2.title}}</span> -->
-                        </template>
+  <i :class="child2.iconCls"></i>
+  <!-- <span slot="title">{{child2.title}}</span> -->
+</template>
                 <!-- 三级菜单     -->
                     <el-menu-item-group class="menuThree">
                         <el-menu-item :index="'/'+child3.location" v-for="child3 in child2.children" :key="child3.id" v-if="!child3.children"  style="font-size: 16px"><i :class="child3.iconCls">{{child3.title}}</i></el-menu-item>
@@ -95,16 +95,60 @@
            <transition name="fade" mode="out-in">
              <router-view></router-view>
            </transition>
+           <!-- 用户设置操作dialog -->
+          <el-dialog
+            title="用户信息"
+            :visible.sync="Editdiolog"
+            width="30%"
+            center>
+              <el-form :model="optionform">
+            <el-form-item label="用户头像">
+              <div style = "text-align:center">
+              <img class="formuserimg" :src="this.sysUserAvatar" />
+              <el-button type="primary" @click="Changeimg()">上传头像</el-button>
+              </div>
+              
+            </el-form-item>
+            <el-form-item label="用户名" :label-width="formLabelWidth">
+              <el-input v-model="optionform.username"></el-input>
+            </el-form-item>
+             <el-form-item label="邮箱" :label-width="formLabelWidth">
+              <el-input v-model="optionform.useremail"></el-input>
+            </el-form-item>
+              <el-form-item label="旧密码" :label-width="formLabelWidth">
+              <el-input v-model="optionform.oldpassw"></el-input>
+            </el-form-item>
+             <el-form-item label="新密码" :label-width="formLabelWidth">
+              <el-input v-model="optionform.passw"></el-input>
+            </el-form-item>
+             <el-form-item label="确认密码" :label-width="formLabelWidth">
+              <el-input v-model="optionform.confirmpassw"></el-input>
+            </el-form-item>
+<!-- 
+            <el-form-item label="内容":label-width="formLabelWidth">
+              <el-input type="textarea" v-model="optionform.content"></el-input>
+            </el-form-item> -->
+            <el-form-item>
+              <el-button type="primary" @click="Changeoption()">提交修改</el-button>
+              <el-button  @click="Editdiolog = false">取消</el-button>
+            </el-form-item>
+          </el-form>
+              <!-- <el-button @click="Editdiolog = false">取 消</el-button>
+              <el-button type="primary" @click="Editdiolog = false">确 定</el-button> -->
+          
+          </el-dialog>
+          <!-- ----------------------- -->
          </el-col>
        </div>
      </section>
    </el-col>
  </el-row>
 </div>
+
 </template>
 
 <script>
-// import Sidebar from './sidebar'
+// import Sidebar form './sidebar'
 export default {
   //   components: {Sidebar},
   data () {
@@ -114,9 +158,19 @@ export default {
       sysName: '五蕴神农',
       QueryUrl: this.$store.state.BaseUrl,
       sysTitle: '玩开心农场吃有机蔬菜',
-      sysUserName: 'admin',
+      sysUserName: 'admin', // 用户名
       collapsed: false,
       rootArry: this.$store.state.rootArry,
+      Editdiolog: false, // 编辑框
+      formLabelWidth: '80px',
+      optionform: {
+        userimg: '',
+        username: '',
+        useremail: '0',
+        oldpassw: '',
+        passw: '',
+        confirmpassw: ''
+      },
       menuList: [
         {
           title: '首页',
@@ -309,10 +363,21 @@ export default {
 
               location: 'VegetableMiniatures',
               iconCls: 'fa el-icon-circle-plus'
+            },
+            {
+              title: '蔬菜统计',
+
+              location: 'VegetableCount',
+              iconCls: 'fa el-icon-document'
+            },
+            {
+              title: '心愿蔬菜',
+
+              location: 'VegetableWish',
+              iconCls: 'fa el-icon-circle-plus'
             }
           ]
         }
-
       ]
       // menuList: [
       //   {
@@ -373,16 +438,21 @@ export default {
     // 退出登录
     logout: function () {
       let _this = this
-      this.$Haxios(this.QueryUrl + '/admin/logout', {}, null, this.getCookie('token'))
+      this.$Haxios(
+        this.QueryUrl + '/admin/logout',
+        {},
+        null,
+        this.getCookie('token')
+      )
 
-        .then((res) => {
+        .then(res => {
           console.log(res)
           _this.msgalert(res)
           if (res.data.code === 200) {
             _this.$router.push('/login')
           }
         })
-        .catch((e) => {
+        .catch(e => {
           console.log(e)
         })
     },
@@ -393,7 +463,7 @@ export default {
       // if (this.activeIndex === '/userInfo') {
       //   path = this.activeIndex + '/' + this.$store.state.userInfo.name
       // }
-      this.$router.push({path: path})
+      this.$router.push({ path: path })
     },
     tabRemove (targetName) {
       // 首页不可删除
@@ -404,12 +474,27 @@ export default {
       if (this.activeIndex === targetName) {
         // 设置当前激活的路由
         if (this.options && this.options.length >= 1) {
-          this.$store.commit('set_active_index', this.options[this.options.length - 1].route)
-          this.$router.push({path: this.activeIndex})
+          this.$store.commit(
+            'set_active_index',
+            this.options[this.options.length - 1].route
+          )
+          this.$router.push({ path: this.activeIndex })
         } else {
-          this.$router.push({path: '/'})
+          this.$router.push({ path: '/' })
         }
       }
+    },
+    // 打开用户设置
+    useroption () {
+      this.Editdiolog = true
+    },
+    // 用户头像上传
+    Changeimg () {
+
+    },
+    // 提交用户更改信息
+    Changeoption () {
+
     }
   },
   computed: {
@@ -426,7 +511,7 @@ export default {
     }
   },
   watch: {
-    '$route' (to) {
+    $route (to) {
       let flag = false
       for (let option of this.options) {
         if (option.name === to.name) {
@@ -436,7 +521,10 @@ export default {
         }
       }
       if (!flag) {
-        this.$store.commit('add_tabs', {route: '/' + to.path.split('/')[1], name: to.name})
+        this.$store.commit('add_tabs', {
+          route: '/' + to.path.split('/')[1],
+          name: to.name
+        })
         this.$store.commit('set_active_index', '/' + to.path.split('/')[1])
       }
     }
@@ -506,6 +594,13 @@ export default {
     top: 60px;
     bottom: 0;
     overflow: hidden;
+    .formuserimg {
+      width: 100px;
+      height: 100px;
+      border-radius: 100px;
+
+      margin: 0 auto
+    }
     aside {
       flex: 0 0 230px;
       width: 230px;

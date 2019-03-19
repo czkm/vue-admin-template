@@ -18,7 +18,7 @@ Vue.use(Vuex)
 const store = new Vuex.Store({
   state: {
     bseurl: 'https://www.easy-mock.com/mock/5c0c79f91b4f006bfb76b9b5/example',
-    BaseUrl: 'http://172.16.0.67:8088/farmbackstage', // 'http://wysn.fancybull.cn/farmbackstage',
+    BaseUrl: 'http://wysn.fancybull.cn/farmbackstage', // 'http://172.16.0.67:8088/farmbackstage', ,
     xgrid: 0, // 修改人id
     publickey: `MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAzu6QebxqBf+OzDj9pQ9L
     7zi4+1NdXhvMcIJFlz1yjREVQtbGfblnY0VDM3vePdLS3rwSK/QCQTS6ZtMqGSa+

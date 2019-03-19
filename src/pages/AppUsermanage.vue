@@ -13,7 +13,7 @@
             <el-col :span="15">
               <el-date-picker
                 :clearable= false
-                v-model="searchform.time"
+                v-model="selecttime"
                 value-format="yyyy-MM-dd"
                 type="daterange"
                 range-separator="至"
@@ -62,7 +62,6 @@
 export default {
   data () {
     return {
-      // searchData: {}, // 传递后台查询对象
 
       path: 'AppUsermanage',
       loading: true,
@@ -71,48 +70,57 @@ export default {
       currentPage: 1, // 初始页
       pagesize: 5, //    每页的数据
       tableData: [],
+      selecttime: '',
       searchform: {
         nc: '',
         sjhm: '',
-        time: ''
+        starttime: '',
+        endtime: ''
       }
     }
   },
   methods: {
 
     handleSearch () {
-      let _this = this
-      this.loading = true
+      this.searchform.starttime = this.selecttime[0]
+      this.searchform.endtime = this.selecttime[1]
+      this.searchform = {'nc': this.searchform.nc, 'sjhm': this.searchform.sjhm, 'starttime': this.searchform.starttime, 'endtime': this.searchform.endtime}
+      this.handleDataGet()
+      // let _this = this
+      // this.loading = true
 
-      let nc = _this.searchform.nc
-      let sjhm = _this.searchform.sjhm
-      let starttime = _this.searchform.time[0]
-      let endtime = _this.searchform.time[1]
-      // 请求头带参
-      this.$Haxios(this.QueryUrl, {
-        nc,
-        sjhm,
-        starttime,
-        endtime
-      }, this.path, this.getCookie('token'))
-        .then((res) => {
-          console.log(res.rows)
-          _this.tableData = res.data.rows
-          _this.loading = false
-          _this.total = res.data.total
-          _this.page = res.data.page
-          _this.limit = res.data.limit
-        })
-        .catch(e => {
-          console.log(e)
-        })
+      // let nc = _this.searchform.nc
+      // let sjhm = _this.searchform.sjhm
+      // let starttime = _this.searchform.time[0]
+      // let endtime = _this.searchform.time[1]
+      // // 请求头带参
+      // this.$Haxios(this.QueryUrl, {
+      //   nc,
+      //   sjhm,
+      //   starttime,
+      //   endtime
+      // }, this.path, this.getCookie('token'))
+      //   .then((res) => {
+      //     console.log(res.rows)
+      //     _this.tableData = res.data.rows
+      //     _this.loading = false
+      //     _this.total = res.data.total
+      //     _this.page = res.data.page
+      //     _this.limit = res.data.limit
+      //   })
+      //   .catch(e => {
+      //     console.log(e)
+      //   })
     },
     handleclear () {
       this.searchform = {
         nc: '',
         sjhm: '',
-        time: ''
+        starttime: '',
+        endtime: ''
       }
+
+      this.selecttime = ''
       this.handleDataGet()
     },
 

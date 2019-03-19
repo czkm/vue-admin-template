@@ -9,7 +9,15 @@
           </el-form-item>
 
           <el-form-item label="土地状态">
-            <el-input v-model="searchform.tdzt" placeholder="土地状态"></el-input>
+            <!-- <el-input v-model="searchform.tdzt" placeholder="土地状态"></el-input> -->
+               <el-select v-model="Searchvalue" placeholder="请选择">
+            <el-option
+              v-for="item in Searchtdzt"
+              :key="item.Searchvalue"
+              :label="item.label"
+              :value="item.Searchvalue"
+            ></el-option>
+          </el-select>
           </el-form-item>
 
           <el-form-item>
@@ -192,6 +200,23 @@ export default {
         }
       ],
       selectvalue: '', // 选择土地状态
+
+      Searchtdzt: [
+        {
+          Searchvalue: '1',
+          label: '待出租'
+        },
+        {
+          Searchvalue: '2',
+          label: '已出租'
+        },
+        {
+          Searchvalue: '3',
+          label: '锁定中'
+        }
+      ],
+      Searchvalue: '', // 选择搜索土地状态
+
       selectname: [
         {
           nctdid: '0',
@@ -205,7 +230,8 @@ export default {
       xgrid: this.$store.state.xgrid, // 修改人id
       QueryUrl: this.$store.state.BaseUrl,
       searchform: {
-        tdbh: ''
+        tdbh: '',
+        tdzt: ''
       },
       total: 0, // 总数
       currentPage: 1, // 初始页
@@ -424,33 +450,38 @@ export default {
       )
     },
     handleSearch () {
-      let _this = this
-      this.loading = true
-      let tdbh = this.searchform.tdbh
-      let tdzt = this.searchform.tdzt
+      this.searchform = {'tdbh': this.searchform.tdbh, 'tdzt': this.Searchvalue}
+      this.handleDataGet()
+      // let _this = this
+      // this.loading = true
+      // let tdbh = this.searchform.tdbh
+      // let tdzt = this.searchform.tdzt
 
-      this.$Haxios(
-        this.QueryUrl + '/farmland/queryland',
-        {
-          tdbh,
-          tdzt
-        },
-        this.path,
-        this.getCookie('token')
-      ).then(res => {
-        console.log(res)
-        _this.tableData = res.data.rows
-        _this.loading = false
-        _this.total = res.data.total
-        _this.page = res.data.page
-        _this.limit = res.data.limit
-      })
+      // this.$Haxios(
+      //   this.QueryUrl + '/farmland/queryland',
+      //   {
+      //     tdbh,
+      //     tdzt
+      //   },
+      //   this.path,
+      //   this.getCookie('token')
+      // ).then(res => {
+      //   console.log(res)
+      //   _this.tableData = res.data.rows
+      //   _this.loading = false
+      //   _this.total = res.data.total
+      //   _this.page = res.data.page
+      //   _this.limit = res.data.limit
+      // })
     },
     // 清除搜索
     handleclear () {
       this.searchform = {
-        scmc: ''
+        tdbh: '',
+        tdzt: ''
+
       }
+      this.Searchvalue = ''
       this.handleDataGet()
     }
   }

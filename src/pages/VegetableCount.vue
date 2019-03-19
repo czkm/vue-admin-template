@@ -31,38 +31,26 @@
         </el-form>
       </el-col>
     </el-row>
+
     <el-table :data="tableData" border style="width: 100%">
-        <!-- <el-table-column prop="nctdid" label="土地id"></el-table-column> -->
-      <el-table-column prop="cymc" label="菜园名称"></el-table-column>
-      <el-table-column prop="zdsl" sortable label="租地数量"></el-table-column>
-      <el-table-column prop="" sortable label="地区"></el-table-column>
-      <el-table-column prop="ncmc" label="农场名称"></el-table-column>
+      <!-- <el-table-column prop="nctdid" label="土地id"></el-table-column> -->
+      <el-table-column prop="username" label="用户"></el-table-column>
+      <el-table-column prop="phone" sortable label="手机号码"></el-table-column>
+      <el-table-column prop="area" sortable label="租地面积"></el-table-column>
+      <el-table-column prop="tdid" label="土地编号"></el-table-column>
 
-      <el-table-column prop="nc" sortable label="昵称"></el-table-column>
-      <el-table-column prop="sjhm" label="手机号码"></el-table-column>
-      <el-table-column prop="zdmj" sortable label="租地面积/㎡"></el-table-column>
-
-      <el-table-column prop="zdje" sortable label="租地金额/元"></el-table-column>
-      <el-table-column prop="qzsj" sortable label="起租时间" width="200"></el-table-column>
-      <el-table-column prop="dzsj" sortable label="到租时间" width="200"></el-table-column>
-      <el-table-column label="支付类型">
+      <!-- <el-table-column prop="love" sortable label="喜欢的蔬菜"> -->
+      <el-table-column label="喜欢的蔬菜" width="200">
         <template slot-scope="scope">
-          <i v-if="scope.row.zflx == 1">支付宝</i>
-          <i v-else-if="scope.row.zflx == 2">微信</i>
-          <i v-else>其他</i>
+          <!-- 循环得出喜欢蔬菜个数 -->
+          <div class="lovediv" v-for="(love, index) in scope.row.love.vegetable" :key="index">
+            <el-badge :value="scope.row.love.value[index]" :max="99" class="item">
+              <el-tag size="medium">{{scope.row.love.vegetable[index]}}</el-tag>
+            </el-badge>
+          </div>
         </template>
       </el-table-column>
-
-      <el-table-column prop="zfddh" sortable label="支付订单号"></el-table-column>
-      <el-table-column prop="zfsj" sortable label="支付时间"></el-table-column>
-       <el-table-column label="操作">
-        <template slot-scope="scope">
-          <el-button
-            size="mini"
-            type="danger"
-            @click="Reminduser(scope.$index, scope.row)">提醒选菜</el-button>
-        </template>
-      </el-table-column>
+      <el-table-column prop="wish" label="添加心愿蔬菜"></el-table-column>
     </el-table>
     <el-pagination
       :current-page="currentPage"
@@ -77,7 +65,6 @@
 </template>
 
 <script>
-
 export default {
   data () {
     return {
@@ -87,8 +74,8 @@ export default {
       search: '',
       currentPage: 1, // 初始页
       pagesize: 10, //    每页的数据
-      tableData: [],
-      path: 'UserManage ',
+      //   tableData: [],
+      path: 'VegetableCount ',
       xgrid: this.$store.state.xgrid, // 修改人id
       selecttime: '', // 选择时间
       searchform: {
@@ -96,41 +83,33 @@ export default {
         sjhm: '',
         starttime: '',
         endtime: ''
-      }
+      },
+      tableData: [
+        {
+          username: '1',
+          phone: '1',
+          area: '1',
+          tdid: '1',
+          love: {
+            vegetable: ['萝卜', '白菜', '地瓜'],
+            value: ['10', '12', '15']
+          },
+          wish: '1'
+        }
+      ]
     }
   },
   methods: {
-
     handleSearch () {
       this.searchform.starttime = this.selecttime[0]
       this.searchform.endtime = this.selecttime[1]
-      this.searchData = {'nc': this.searchform.nc, 'sjhm': this.searchform.sjhm, 'starttime': this.searchform.starttime, 'endtime': this.searchform.endtime}
+      this.searchData = {
+        nc: this.searchform.nc,
+        sjhm: this.searchform.sjhm,
+        starttime: this.searchform.starttime,
+        endtime: this.searchform.endtime
+      }
       this.handleDataGet()
-      // this.loading = true
-      // let _this = this
-      // let nc = _this.searchform.nc
-      // let sjhm = _this.searchform.sjhm
-      // let starttime = _this.searchform.time[0]
-      // let endtime = _this.searchform.time[1]
-      // console.log(_this.searchform)
-      // this.$Haxios(
-      //   this.QueryUrl + '/userinfo/queryleaseinfo',
-      //   {
-      //     nc,
-      //     sjhm,
-      //     starttime,
-      //     endtime
-      //   },
-      //   this.path,
-      //   this.getCookie('token')
-      // ).then(res => {
-      //   console.log(res)
-      //   _this.tableData = res.data.rows
-      //   _this.loading = false
-      //   _this.total = res.data.total
-      //   _this.page = res.data.page
-      //   _this.limit = res.data.limit
-      // })
     },
     handleclear () {
       this.searchform = {
@@ -179,7 +158,7 @@ export default {
 
   mounted () {
     this.$nextTick(() => {
-      this.handleDataGet()
+      //   this.handleDataGet()
     })
   }
 }
@@ -188,5 +167,13 @@ export default {
 <style lang="scss" scoped>
 .count {
   text-align: right;
+}
+.lovediv{
+
+    float: left;
+}
+.item {
+  margin-top: 10px;
+  margin-right: 40px;
 }
 </style>

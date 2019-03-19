@@ -20,36 +20,21 @@
     <!-- 主界面 -->
     <div class="tableMain">
       <el-table :data="tableData" style="width: 100%">
-        <!-- <el-table-column type="selection" width="55"></el-table-column> -->
-        <el-table-column label="图片" width="200">
-          <template slot-scope="scope">
-            <img :src="scope.row.scslt" alt style="width: 150px;height: 150px">
-          </template>
-        </el-table-column>
         <el-table-column prop="scmc" label="蔬菜名" width="150"></el-table-column>
 
-        <el-table-column label="生产周期" width="150">
+        <el-table-column prop="scms" label="蔬菜描述" width="250"></el-table-column>
+        <el-table-column label="烹饪方式">
           <template slot-scope="scope">
-            <div size="medium" v-html="(scope.row.sczq + '天')"/>
+            <el-col :span="6" v-for="(cook, index) in scope.row.cook" :key="index">
+              <div class="cookbox" type="info">
+                <div class="cooktitle">{{scope.row.cook[index].title}}</div>
+              </div>
+              <div class="cookimg">
+                <img :src="scope.row.cook[index].src" alt style="width: 150px;height: 150px">
+              </div>
+            </el-col>
           </template>
         </el-table-column>
-        <el-table-column label="产能" width="150">
-          <template slot-scope="scope">
-            <div size="medium" v-html="(scope.row.cnj + 'Kg/'+scope.row.cnpf+'㎡')"/>
-            <!-- <div size="medium" v-html="(scope.row.cnpf)"/> -->
-          </template>
-        </el-table-column>
-        <el-table-column label="推荐种植面积" width="150">
-          <template slot-scope="scope">
-            <div size="medium" v-html="(scope.row.tjzzmj+'㎡' )"/>
-          </template>
-        </el-table-column>
-        <el-table-column label="种植季节" width="150">
-          <template slot-scope="scope">
-            <div size="medium" v-html="(scope.row.zzjj+'月份')"/>
-          </template>
-        </el-table-column>
-        <el-table-column prop="scjj" label="功效"></el-table-column>
         <el-table-column label="操作" width="200">
           <template slot-scope="scope">
             <el-button
@@ -72,40 +57,21 @@
         layout="total, sizes, prev, pager, next, jumper"
         @size-change="handleSizeChange"
         @current-change="handleCurrentChange"
-
       />
     </div>
     <!-- 新建编辑 -->
-    <el-dialog title="蔬菜基本信息" :visible.sync="Editdialog"  >
-      <el-form :model="Editform" :rules="rules" ref="Editform" v-loading="uploadloading" element-loading-text="在传了，别催">
+    <el-dialog title="蔬菜基本信息" :visible.sync="Editdialog">
+      <el-form
+        :model="Editform"
+        :rules="rules"
+        ref="Editform"
+        v-loading="uploadloading"
+        element-loading-text="在传了，别催"
+      >
         <el-form-item class="formitem" label="蔬菜名称" :label-width="formLabelWidth" prop="scmc">
           <el-input class="inputclass" v-model="Editform.scmc"></el-input>
         </el-form-item>
 
-        <el-form-item :label-width="formLabelWidth" label="蔬菜产能Kg/㎡" prop="cnj">
-          <el-input class="inputclass" v-model.number="Editform.cnj" autocomplete="off"></el-input>
-          <!-- <i class="el-icon-minus"></i> -->/
-          <el-input class="inputclass" v-model.number="Editform.cnpf" autocomplete="off"></el-input>
-        </el-form-item>
-        <el-form-item class="formitem" label="推荐种植面积" :label-width="formLabelWidth" prop="tjzzmj">
-          <el-input class="appendinput" v-model.number="Editform.tjzzmj">
-            <template slot="append">10/㎡</template>
-          </el-input>
-        </el-form-item>
-        <el-form-item :label-width="formLabelWidth" label="生产周期-日" prop="startsczq">
-          <el-input class="inputclass" v-model.number="Editform.startsczq" autocomplete="off"></el-input>
-          <!-- <i class="el-icon-minus"></i> -->-
-          <el-input class="inputclass" v-model.number="Editform.endsczq" autocomplete="off"></el-input>
-        </el-form-item>
-        <el-form-item :label-width="formLabelWidth" label="种植季节-月" prop="startzzjj">
-          <el-input class="inputclass" v-model.number="Editform.startzzjj" autocomplete="off"></el-input>
-          <!-- <i class="el-icon-minus"></i> -->-
-          <el-input class="inputclass" v-model.number="Editform.endzzjj" autocomplete="off"></el-input>
-        </el-form-item>
-
-        <el-form-item label=" 蔬菜功效与作用" :label-width="formLabelWidth" prop="scjj">
-          <el-input type="textarea" v-model="Editform.scjj"></el-input>
-        </el-form-item>
         <el-form-item label=" 预览" :label-width="formLabelWidth">
           <!-- 蔬菜轮播预览 -->
           <div v-for="item in Editform.sczplist" :key="item.id">
@@ -125,19 +91,18 @@
             list-type="picture-card"
             :auto-upload="false"
             :http-request="uploadFile"
-
             :on-change="imgsize"
             ref="upload"
+
           >
             <i class="el-icon-plus"></i>
           </el-upload>
           <el-button class="submitbtn" @click="subPicForm()">提交上传</el-button>
         </el-form-item>
 
-          <!-- 蔬菜缩略预览 -->
-
+        <!-- 蔬菜缩略预览 -->
         <el-form-item label=" 缩略图预览" :label-width="formLabelWidth">
-          <div >
+          <div>
             <img
               :src="Editform.scslt"
               alt
@@ -154,14 +119,13 @@
             list-type="picture-card"
             :auto-upload="false"
             :http-request="uploadminiFile"
-            :limit = 1
+            :limit="1"
             ref="miniupload"
           >
             <i class="el-icon-plus"></i>
           </el-upload>
           <el-button class="submitbtn" @click="subMINI()">提交上传</el-button>
         </el-form-item>
-
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="cancel()">取 消</el-button>
@@ -171,80 +135,103 @@
 
     <!-- fa建添加 -->
     <el-dialog title="蔬菜基本信息" :visible.sync="Adddialog">
-      <el-form :model="Addform" :rules="rules" ref="Addform"  v-loading="uploadloading" element-loading-text="在传了，别催">
+      <el-form
+        :model="Addform"
+        :rules="rules"
+        ref="Addform"
+        v-loading="uploadloading"
+        element-loading-text="在传了，别催"
+      >
         <el-form-item class="formitem" label="蔬菜名称" :label-width="formLabelWidth" prop="scmc">
           <el-input class="inputclass" v-model="Addform.scmc"></el-input>
         </el-form-item>
 
-        <el-form-item class="formitem" label="蔬菜种类" :label-width="formLabelWidth" prop="sczl">
-          <el-input  class="inputclass" v-model.number="Addform.sczl"></el-input>
+        <el-form-item class="formitem" label="蔬菜描述" :label-width="formLabelWidth" prop="sczl">
+          <el-input class="inputclass" v-model.number="Addform.sczl"></el-input>
         </el-form-item>
 
-        <el-form-item class="formitem" label="推荐种植面积" :label-width="formLabelWidth" prop="tjzzmj">
-          <el-input class="appendinput" v-model.number="Addform.tjzzmj">
-            <template slot="append">10/㎡</template>
-          </el-input>
-        </el-form-item>
+        <el-row>
+          <el-col :span="8">
+            <el-form-item label="烹饪方式与图片" :label-width="formLabelWidth">
+              <el-input class="cookname" v-model="Addform.cookinput0"></el-input>
+              <el-upload
+                :multiple="multiple"
+                :action="uploadimg()"
+                list-type="picture-card"
+                :auto-upload="false"
+                :http-request="uploadFile"
+                :on-change="imgsize"
+                ref="upload"
+              >
+                <i class="el-icon-plus"></i>
+              </el-upload>
 
-        <el-form-item :label-width="formLabelWidth" label="蔬菜产能Kg/㎡" prop="cnj">
-          <el-input class="inputclass" v-model.number="Addform.cnj" autocomplete="off"></el-input>
-          <!-- <i class="el-icon-minus"></i> -->/
-          <el-input class="inputclass" v-model.number="Addform.cnpf" autocomplete="off"></el-input>
-        </el-form-item>
-        <el-form-item :label-width="formLabelWidth" label="生产周期-日" prop="startsczq">
-          <el-input class="inputclass" v-model.number="Addform.startsczq" autocomplete="off"></el-input>
-          <!-- <i class="el-icon-minus"></i> -->-
-          <el-input class="inputclass" v-model.number="Addform.endsczq" autocomplete="off"></el-input>
-        </el-form-item>
-        <el-form-item :label-width="formLabelWidth" label="种植季节-月" prop="startzzjj">
-          <el-input class="inputclass" v-model.number="Addform.startzzjj" autocomplete="off"></el-input>
-          <!-- <i class="el-icon-minus"></i> -->-
-          <el-input class="inputclass" v-model.number="Addform.endzzjj" autocomplete="off"></el-input>
-        </el-form-item>
+              <el-button class="submitbtn" @click="subAddForm()">提交上传</el-button>
+            </el-form-item>
+          </el-col>
+          <el-col :span="8">
+            <el-form-item  :label-width="formLabelWidth">
+              <el-input class="cookname" v-model="Addform.cookinput1"></el-input>
+              <el-upload
+                :multiple="multiple"
+                :action="uploadimg()"
+                list-type="picture-card"
+                :auto-upload="false"
+                :http-request="uploadFile"
+                :on-change="imgsize"
+                ref="upload"
+              >
+                <i class="el-icon-plus"></i>
+              </el-upload>
 
-        <el-form-item label=" 蔬菜功效与作用" :label-width="formLabelWidth" prop="scjj">
-          <el-input type="textarea" v-model="Addform.scjj"></el-input>
-        </el-form-item>
-        <el-form-item label="蔬菜轮播图" :label-width="formLabelWidth">
-          <!-- html组件代码 -->
-          <!-- "http://172.16.0.67:8088/farmbackstage/upload/uploadimgs" -->
-          <el-upload
-            :multiple="multiple"
-            :action="uploadimg()"
-            list-type="picture-card"
-            :auto-upload="false"
-            :http-request="uploadFile"
+              <el-button class="submitbtn" @click="subAddForm()">提交上传</el-button>
+            </el-form-item>
+          </el-col>
+        </el-row>
 
-            :on-change="imgsize"
-            ref="upload"
-          >
-            <i class="el-icon-plus"></i>
-          </el-upload>
-          <el-button class="submitbtn" @click="subAddForm()">提交上传</el-button>
-        </el-form-item>
+        <el-row>
+          <el-col :span="8">
+            <el-form-item :label-width="formLabelWidth">
+              <el-input class="cookname" v-model="Addform.cookinput2"></el-input>
+              <el-upload
+                :multiple="multiple"
+                :action="uploadimg()"
+                list-type="picture-card"
+                :auto-upload="false"
+                :http-request="uploadFile"
+                :on-change="imgsize"
+                ref="upload"
+              >
+                <i class="el-icon-plus"></i>
+              </el-upload>
 
-          <el-form-item label="蔬菜略缩图" :label-width="formLabelWidth">
-          <!-- html组件代码 -->
-          <!-- "http://172.16.0.67:8088/farmbackstage/upload/uploadimgs" -->
-          <el-upload
-            :multiple="multiple"
-            :action="uploadimgs()"
-            list-type="picture-card"
-            :auto-upload="false"
-            :http-request="uploadminiFile"
+              <el-button class="submitbtn" @click="subAddForm()">提交上传</el-button>
+            </el-form-item>
+          </el-col>
+          <el-col :span="8">
+            <el-form-item  :label-width="formLabelWidth">
+              <el-input class="cookname" v-model="Addform.cookinput3"></el-input>
+              <el-upload
+                :multiple="multiple"
+                :action="uploadimg()"
+                list-type="picture-card"
+                :auto-upload="false"
+                :http-request="uploadFile"
+                :on-change="imgsize"
+                ref="upload"
+              >
+                <i class="el-icon-plus"></i>
+              </el-upload>
 
-             :limit = 1
-            ref="miniupload"
-          >
-            <i class="el-icon-plus"></i>
-          </el-upload>
-          <el-button class="submitbtn" @click="subMINI()">略缩图上传</el-button>
-        </el-form-item>
-
+              <el-button class="submitbtn" @click="subAddForm()">提交上传</el-button>
+            </el-form-item>
+          </el-col>
+        </el-row>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="cancel()">取 消</el-button>
         <el-button type="primary" @click="Addformupdate('Addform')">确 定</el-button>
+         <el-button type="primary" @click="test()">测试</el-button>
       </div>
     </el-dialog>
   </div>
@@ -256,18 +243,29 @@ export default {
     return {
       scmc: {}, // 搜索对象
       searchData: {}, // 传递后台查询对象
-      path: 'VegetableManage',
-      multiple: true,
+      path: 'VegetableWish',
+      multiple: false,
       ImgFormDate: '',
       MiniImgFormDate: '',
       xgrid: this.$store.state.xgrid, // 修改人id
       QueryUrl: this.$store.state.BaseUrl,
-      loading: true,
+      loading: false, // true,
       uploadloading: false,
       total: 0, // 总数
       currentPage: 1, // 初始页
       pagesize: 10, //    每页的数据
-      tableData: [],
+      // tableData: [],
+      tableData: [
+        {
+          scmc: '1',
+          scms: '1',
+          cook: [
+            { title: 'lsdsdadasdasdasdasdasdas', src: '1321313' },
+            { title: '44', src: '1321313' },
+            { title: '33', src: '1321313' }
+          ]
+        }
+      ],
       // 搜索
       searchform: {
         scmc: ''
@@ -287,6 +285,12 @@ export default {
         Miniscslt: ''
       },
       Addform: {
+
+        cookinput0: '',
+        cookinput1: '',
+        cookinput2: '',
+        cookinput3: '',
+
         scmc: '',
         scxxid: '',
         startzzjj: '', // 分割种植季节
@@ -334,7 +338,7 @@ export default {
   },
   mounted () {
     this.$nextTick(() => {
-      this.handleDataGet()
+      // this.handleDataGet()
     })
   },
   methods: {
@@ -366,7 +370,7 @@ export default {
         imgsize += fileList[index].size
         console.log(imgsize)
       }
-      if (imgsize > (1024 * 1024 * 2)) {
+      if (imgsize > 1024 * 1024 * 2) {
         this.isimgMAX = true
       } else {
         this.isimgMAX = false
@@ -429,7 +433,6 @@ export default {
         this.path,
         this.getCookie('token'),
         this.searchform
-
       )
     },
     // 控制页面页数
@@ -458,11 +461,10 @@ export default {
         this.path,
         this.getCookie('token'),
         this.searchform
-
       )
     },
     handleSearch () {
-      this.searchData = {'scmc': this.searchform.scmc}
+      this.searchData = { scmc: this.searchform.scmc }
       this.handleDataGet()
     },
 
@@ -506,11 +508,11 @@ export default {
         .post(this.QueryUrl + '/upload/uploadimgs', this.ImgFormDate, config)
         .then(res => {
           if (res.data.code === 200) {
-          // _this.$message({
-          //   message: res.data.msg,
-          //   type: 'success'
+            // _this.$message({
+            //   message: res.data.msg,
+            //   type: 'success'
 
-          // })
+            // })
             _this.msgalert(res)
             _this.Editform.filelist = res.data.result.zpurls
             console.log(_this.Editform.filelist)
@@ -591,11 +593,11 @@ export default {
         .post(this.QueryUrl + '/upload/imgupload', this.MiniImgFormDate, config)
         .then(res => {
           if (res.data.code === 200) {
-          // _this.$message({
-          //   message: res.data.msg,
-          //   type: 'success'
+            // _this.$message({
+            //   message: res.data.msg,
+            //   type: 'success'
 
-          // })
+            // })
             _this.msgalert(res)
             _this.Editform.Miniscslt = res.data.result.imgurl
             _this.Addform.Miniscslt = res.data.result.imgurl
@@ -753,6 +755,11 @@ export default {
           return false
         }
       })
+    },
+
+    // 测试方法
+    test () {
+      console.log(this.Addform.cookinput0)
     }
   }
 }
@@ -797,12 +804,31 @@ export default {
 }
 
 .inputclass {
-  width: 100px;
+  width: 200px;
 }
 .appendinput {
   width: 150px;
 }
 .submitbtn {
   margin-top: 10px;
+}
+.cookbox {
+  margin: 50px auto;
+  height: 50px;
+  width: 100px;
+  float: left;
+}
+.cooktitle {
+  vertical-align: middle;
+  // margin: 50px auto;
+
+  text-align: center;
+}
+.cookimg {
+  float: right;
+}
+.cookname {
+  width: 150px;
+  margin: 10px auto;
 }
 </style>

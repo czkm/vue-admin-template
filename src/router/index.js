@@ -39,6 +39,8 @@ const FinancialManage = () => import('@/pages/FinancialManage')
 const VegetableManage = () => import('@/pages/VegetableManage')
 const SliderManage = () => import('@/pages/SliderManage')
 const AppUsermanage = () => import('@/pages/AppUsermanage')
+const VegetableCount = () => import('@/pages/VegetableCount')
+const VegetableWish = () => import('@/pages/VegetableWish')
 // const VegetableMiniatures = () => import('@/pages/VegetableMiniatures')
 
 Vue.use(Router)
@@ -186,6 +188,15 @@ export default new Router({
         path: '/VegetableMiniatures',
         component: VegetableMiniatures,
         name: '蔬菜略缩图'
+      },
+      {
+        path: '/VegetableCount',
+        component: VegetableCount,
+        name: '蔬菜统计'
+      }, {
+        path: '/VegetableWish',
+        component: VegetableWish,
+        name: '心愿蔬菜'
       }
       ]
     }

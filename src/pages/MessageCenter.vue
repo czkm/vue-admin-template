@@ -1,8 +1,7 @@
 <!--  -->
 <template>
-
   <div v-loading="loading">
-     <el-row>
+    <el-row>
       <el-col :span="24">
         <el-form :inline="true" :model="searchform" class="demo-form-inline">
           <el-form-item label="文章标题">
@@ -14,7 +13,7 @@
           <el-form-item label="选择时间">
             <el-col :span="15">
               <el-date-picker
-                v-model="searchform.cjsj"
+                v-model="selecttime"
                 value-format="yyyy-MM-dd"
                 type="daterange"
                 range-separator="至"
@@ -32,10 +31,9 @@
       </el-col>
     </el-row>
     <!-- 发布-->
-
-    <el-row :gutter="20">
-      <el-col :span="8">
-        <div class="messagecenter">
+    <el-row :gutter="24">
+      <el-col>
+        <!-- <div class="messagecenter">
           <el-form :label-position="labelPosition" label-width="200px" :model="publicform">
             <el-form-item label="发布公告"></el-form-item>
             <el-form-item label="标题">
@@ -50,34 +48,27 @@
               <el-button>取消</el-button>
             </el-form-item>
           </el-form>
-        </div>
+        </div>-->
+        <!-- v-show="!Editdiolog" -->
+        <editor :editorContent.sync="editorContent"></editor>
+
+        <el-button type="primary" @click="onSubmit()">立即发布</el-button>
+        <el-button>取消</el-button>
+        <el-button type="primary" @click="getContent()">测试</el-button>
       </el-col>
-<!-- 发布编辑 -->
-     <el-dialog title="公告编辑" :visible.sync="Editdiolog">
-      <el-form :model="Editform">
-        <el-form-item class="formitem" label="创建时间" >
 
-          <el-tag type="info">{{Editform.cjsj}}</el-tag>
-        </el-form-item>
-        <el-form-item class="formitem"  label="公告标题" >
-          <el-input class="newinput" v-model="Editform.ggbt"></el-input>
-        </el-form-item>
-        <el-form-item label="公告内容" >
-           <el-input type="textarea" v-model="Editform.ggnr"></el-input>
+      <!-- 发布编辑 -->
+      <el-dialog title="公告编辑" :visible.sync="Editdiolog">
+        <!-- 引入富文本编辑 -->
+        <editor :editorContent.sync="editorContent" ref="editor"></editor>
 
-        </el-form-item>
-
-         </el-form>
-          <div slot="footer" class="dialog-footer">
-        <el-button @click="Editformcancel()">取 消</el-button>
-        <el-button type="primary" @click="Editformupdate()">确 定</el-button>
-
-      </div>
+        <el-button type="primary" @click="geteditContent()">diolog测试</el-button>
+        <el-button>取消</el-button>
       </el-dialog>
 
       <!-- 公告详情 -->
-      <el-col :span="15">
-        <el-card class="box-card" shadow="hover">
+      <el-col class="box-card">
+        <el-card shadow="hover">
           <div slot="header" class="clearfix">
             <span>发布记录</span>
           </div>
@@ -107,15 +98,14 @@
               <template slot-scope="scope">
                 <el-button
                   size="small"
-              @click="handleEdit(scope.$index, scope.row,scope.row.ggid)"
-
+                  @click="handleEdit(scope.$index, scope.row,scope.row.ggid)"
                 >编辑</el-button>
                 <el-button size="small" type="danger" @click="handleDelete(scope.row.ggid)">删除</el-button>
               </template>
             </el-table-column>
           </el-table>
           <el-pagination
-           :clearable= false
+            :clearable="false"
             :current-page="currentPage"
             :page-sizes="[5,10]"
             :page-size="pagesize"
@@ -133,9 +123,15 @@
 <script>
 // import {reqMessage} from '@/api'
 // import axios from 'axios'
+import Editor from '../components/editor'
 export default {
+  components: {
+    Editor
+  },
   data () {
     return {
+      editval: '', // 每页编辑值
+      editorContent: '', // 富文本内容
       path: 'MessageCenter',
       QueryUrl: this.$store.state.BaseUrl,
       loading: true,
@@ -152,11 +148,15 @@ export default {
         // id: '',
         content: ''
       },
+      selecttime: '', // 选择时间
+
       // 搜索
       searchform: {
         ggbt: '',
-        cjsj: '',
-        cjr: ''
+        // cjsj: '',
+        cjr: '',
+        starttime: '',
+        endtime: ''
       },
       // 编辑框
       Editform: {
@@ -168,49 +168,69 @@ export default {
     }
   },
   methods: {
-
     // 控制搜索
     handleSearch () {
-      let _this = this
-      this.loading = true
-      let ggbt = this.searchform.ggbt
-      let cjr = this.searchform.cjr
-      let starttime = this.searchform.cjsj[0]
-      let endtime = this.searchform.cjsj[1]
-      console.log('submit!')
-      this.$Haxios(this.QueryUrl + '/notice/querynotice', {
-        ggbt,
-        cjr,
-        starttime,
-        endtime
-      }, this.path, this.getCookie('token'))
-        .then(res => {
-          console.log(res)
-          _this.tableData = res.data.rows
-          _this.loading = false
-          _this.total = res.data.total
-          _this.page = res.data.page
-          _this.limit = res.data.limit
-        })
+      this.searchform.starttime = this.selecttime[0]
+      this.searchform.endtime = this.selecttime[1]
+      this.searchform = {
+        ggbt: this.searchform.ggbt,
+        cjr: this.searchform.sjhm,
+        starttime: this.searchform.starttime,
+        endtime: this.searchform.endtime
+      }
+      this.handleDataGet()
     },
     handleclear () {
       this.searchform = {
         ggbt: '',
-        cjsj: '',
-        cjr: ''
+        // cjsj: '',
+        cjr: '',
+        starttime: '',
+        endtime: ''
       }
+      this.selecttime = ''
+
       this.handleDataGet()
     },
     handleDataGet () {
-      this.PageAxios(1, this.pagesize, this.QueryUrl + '/notice/querynotice', this.path, this.getCookie('token'), this.searchform)
+      this.PageAxios(
+        1,
+        this.pagesize,
+        this.QueryUrl + '/notice/querynotice',
+        this.path,
+        this.getCookie('token'),
+        this.searchform
+      )
     },
     // 控制页面页数
     handleSizeChange: function (size) {
-      this.PageAxios(1, size, this.QueryUrl + '/notice/querynotice', this.path, this.getCookie('token'), this.searchform)
+      this.PageAxios(
+        1,
+        size,
+        this.QueryUrl + '/notice/querynotice',
+        this.path,
+        this.getCookie('token'),
+        this.searchform
+      )
     },
     // 点击第几页
     handleCurrentChange: function (currentPage) {
-      this.PageAxios(currentPage, this.pagesize, this.QueryUrl + '/notice/querynotice', this.path, this.getCookie('token'), this.searchform)
+      this.PageAxios(
+        currentPage,
+        this.pagesize,
+        this.QueryUrl + '/notice/querynotice',
+        this.path,
+        this.getCookie('token'),
+        this.searchform
+      )
+    },
+    // 测试获取html
+    getContent: function () {
+      console.log(this.editorContent)
+    },
+    // 获取编辑的html
+    geteditContent () {
+      this.$refs.editor.geteditvale()
     },
 
     // 发布公告
@@ -221,11 +241,16 @@ export default {
       let ggnr = this.publicform.content
       let cjrid = 0
       console.log(cjrid)
-      this.$Haxios(this.QueryUrl + '/notice/addnotice', {
-        ggbt,
-        ggnr,
-        cjrid
-      }, this.path, this.getCookie('token'))
+      this.$Haxios(
+        this.QueryUrl + '/notice/addnotice',
+        {
+          ggbt,
+          ggnr,
+          cjrid
+        },
+        this.path,
+        this.getCookie('token')
+      )
         .then(res => {
           // 判断用户是否提交成功
           if (res.data.code === 200) {
@@ -251,9 +276,14 @@ export default {
     },
     // 编辑公告
     handleEdit (index, row, ggid) {
-      console.log(ggid)
-      this.Editform = this.tableData[index]
-      this.Editform.ggid = ggid
+      // this.$refs.editor.set(this.editorContent)
+      setTimeout(() => {
+        this.$refs.editor.editcreat(this.editorContent)
+      }, 100)
+
+      // console.log(ggid)
+      // this.Editform = this.tableData[index]
+      // this.Editform.ggid = ggid
       this.Editdiolog = true
     },
     // 提交编辑
@@ -264,14 +294,18 @@ export default {
       let ggbt = this.Editform.ggbt
       let ggnr = this.Editform.ggnr
 
-      this.$Haxios
-        .post(this.QueryUrl + '/notice/editnotice', {
+      this.$Haxios(
+        this.QueryUrl + '/notice/editnotice',
+        {
           ggbt,
           ggnr,
           ggid
-
-        }, this.path, this.getCookie('token'))
+        },
+        this.path,
+        this.getCookie('token')
+      )
         .then(res => {
+          this.Editdiolog = false
           console.log(res)
           _this.handleDataGet()
           _this.msgalert(res)
@@ -283,7 +317,12 @@ export default {
     // 删除公告
     handleDelete (ggid) {
       let _this = this
-      this.$Haxios(this.$store.state.BaseUrl + '/notice/delnotice', { ggid }, this.path, this.getCookie('token'))
+      this.$Haxios(
+        this.$store.state.BaseUrl + '/notice/delnotice',
+        { ggid },
+        this.path,
+        this.getCookie('token')
+      )
         .then(res => {
           console.log(res.data)
           _this.handleDataGet()
@@ -293,7 +332,6 @@ export default {
           console.log(e)
         })
     }
-
   },
   mounted () {
     this.$nextTick(() => {
@@ -310,7 +348,7 @@ export default {
   margin: 0 auto;
 }
 .box-card {
-  width: 1000px;
+  // width: 800px;
   float: right;
 }
 </style>

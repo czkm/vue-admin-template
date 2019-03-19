@@ -315,31 +315,33 @@ export default {
         })
     },
     handleSearch () {
-      let _this = this
-      this.loading = true
-      let tdmc = _this.searchform.tdmc
-      let szsf = _this.searchform.szsf
-      let szcs = _this.searchform.szcs
-      let szdq = _this.searchform.szdq
-      // 请求头带参
-      this.$Haxios(this.QueryUrl + '/farmland/queryfarm', {
-        tdmc,
-        szsf,
-        szcs,
-        szdq
+      this.searchform = {'tdmc': this.searchform.tdmc, 'szsf': this.searchform.szsf, 'szcs': this.searchform.szcs, 'szdq': this.searchform.szdq}
+      this.handleDataGet()
+      // let _this = this
+      // this.loading = true
+      // let tdmc = _this.searchform.tdmc
+      // let szsf = _this.searchform.szsf
+      // let szcs = _this.searchform.szcs
+      // let szdq = _this.searchform.szdq
+      // // 请求头带参
+      // this.$Haxios(this.QueryUrl + '/farmland/queryfarm', {
+      //   tdmc,
+      //   szsf,
+      //   szcs,
+      //   szdq
 
-      }, this.path, this.getCookie('token'))
-        .then((res) => {
-          console.log(res.rows)
-          _this.tableData = res.data.rows
-          _this.loading = false
-          _this.total = res.data.total
-          _this.page = res.data.page
-          _this.limit = res.data.limit
-        })
-        .catch(e => {
-          console.log(e)
-        })
+      // }, this.path, this.getCookie('token'))
+      //   .then((res) => {
+      //     console.log(res.rows)
+      //     _this.tableData = res.data.rows
+      //     _this.loading = false
+      //     _this.total = res.data.total
+      //     _this.page = res.data.page
+      //     _this.limit = res.data.limit
+      //   })
+      //   .catch(e => {
+      //     console.log(e)
+      //   })
     },
     handleclear () {
       this.searchform = {

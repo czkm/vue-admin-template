@@ -1,73 +1,38 @@
 <template>
-  <div class="box">
-    <el-input v-model="search" clearable style="width: 200px" placeholder="请输入内容"/>
-    <!-- 分页器初始:data="tables.slice((currentPage-1)*pagesize,currentPage*pagesize)" -->
-    <el-table
-      :data="tables.slice((currentPage-1)*pagesize,currentPage*pagesize)"
-      height="600"
-      style="width: 100%"
-    >
-      <el-table-column label="用户" width="200">
-        <template slot-scope="scope">
-          <el-tag size="medium" v-html="format(scope.row.name)"/>
-        </template>
-      </el-table-column>
-      <el-table-column label="手机号码" width="200">
-        <template slot-scope="scope">
-          <span v-html="format(scope.row.phone)"/>
-        </template>
-      </el-table-column>
+  <div class="basetable" v-loading="loading" element-loading-text="拼命加载中">
+    <el-row>
+      <el-col :span="24">
+        <el-form :inline="true" :model="searchform" class="demo-form-inline">
+          <el-form-item label="农场名称">
+            <el-input v-model="searchform.ncmc" placeholder="请输入农场名称"></el-input>
+          </el-form-item>
 
-      <el-table-column label="面积" width="200">
-        <template slot-scope="scope">
-          <span v-html="format(scope.row.acreage)"/>
-        </template>
-      </el-table-column>
- <!--
-      <el-table-column label="开垦时间" width="150">
-        <template slot-scope="scope">
+          <el-form-item>
+            <el-button type="primary" @click="handleSearch">查询</el-button>
+            <el-button type="danger" @click="handleclear">清除</el-button>
 
-          <span v-html="format(scope.row.startdate)"/>
-        </template>
-      </el-table-column>
--->
-      <el-table-column label="播种时间" width="200">
-        <template slot-scope="scope">
-          <span v-html="format(scope.row.seedtime)"/>
-        </template>
-      </el-table-column>
-      <el-table-column label="蔬菜种类" width="200">
-        <template slot-scope="scope">
+          </el-form-item>
+        </el-form>
+      </el-col>
+    </el-row>
 
-      <el-select v-model="scope.row.value" placeholder="请选择">
-            <el-option
-              v-for="item in scope.row.type"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value">
-            </el-option>
-        </el-select>
+    <el-table :data="tableData" border style="width: 100%">
+      <el-table-column fixed prop="nc" label="用户昵称" width="100"></el-table-column>
+      <el-table-column prop="ncmc" label="农场名称" width="100"></el-table-column>
+      <el-table-column prop="scmc" label="昵称" width="200"></el-table-column>
+      <el-table-column prop="sjhm" label="手机号码" width="200"></el-table-column>
+      <!-- <el-table-column prop="sczz" sortable label="蔬菜种植"></el-table-column> -->
+      <el-table-column prop="zzmj" label="种植面积" width="100"></el-table-column>
 
-        </template>
-      </el-table-column>
+      <el-table-column prop="bzsj" sortable label="播种时间" width="200"></el-table-column>
+      <el-table-column prop="scmc" label="蔬菜名称" width="200"></el-table-column>
+      <el-table-column prop="sczq" sortable label="种植周期" width="200"></el-table-column>
 
-      <el-table-column label="种植周期" width="200">
-        <template slot-scope="scope">
-          <span style="margin-left: 10px" v-html="format(scope.row.plant)"/>
-        </template>
-      </el-table-column>
-
-      <!-- <el-table-column label="收获时间" width="150">
-        <template slot-scope="scope">
-          <span style="margin-left: 10px" v-html="format(scope.row.enddate)"/>
-        </template>
-      </el-table-column> -->
-
-      <el-table-column label="操作" class="btn-group">
+      <el-table-column label="操作" class="btn-group" width="450">
         <template slot-scope="scope">
           <div class="btn-option">
             <el-popover trigger="hover" placement="top">
-              <p>播种次数: {{ scope.row.option[0] }}</p>
+              <p>播种次数: 1</p>
               <div slot="reference" class="name-wrapper">
                 <el-button size="mini" @click="handleSeed(scope.$index, scope.row)">播种</el-button>
               </div>
@@ -76,7 +41,7 @@
 
           <div class="btn-option">
             <el-popover trigger="hover" placement="top">
-              <p>浇水次数: {{ scope.row.option[1] }}</p>
+              <p>浇水次数:</p>
               <div slot="reference" class="name-wrapper">
                 <el-button size="mini" @click="handleWater(scope.$index, scope.row)">浇水</el-button>
               </div>
@@ -84,7 +49,7 @@
           </div>
           <div class="btn-option">
             <el-popover trigger="hover" placement="top">
-              <p>除草次数: {{ scope.row.option[2] }}</p>
+              <p>除草次数:</p>
               <div slot="reference" class="name-wrapper">
                 <el-button size="mini" @click="handleWeed(scope.$index, scope.row)">除草</el-button>
               </div>
@@ -92,37 +57,46 @@
           </div>
           <div class="btn-option">
             <el-popover trigger="hover" placement="top">
-              <p>施肥次数: {{ scope.row.option[3] }}</p>
+              <p>施肥次数:</p>
               <div slot="reference" class="name-wrapper">
                 <el-button size="mini" @click="handleManure(scope.$index, scope.row)">施肥</el-button>
               </div>
             </el-popover>
           </div>
+
           <div class="btn-option">
             <el-popover trigger="hover" placement="top">
-              <p>收获次数: {{ scope.row.option[4] }}</p>
+              <p>收成</p>
+              <div slot="reference" class="name-wrapper">
+                <el-button size="mini" @click="handleWater(scope.$index, scope.row)">浇水</el-button>
+              </div>
+            </el-popover>
+          </div>
+          <div class="btn-option">
+            <el-popover trigger="hover" placement="top">
+              <p>收获次数:</p>
               <div slot="reference" class="name-wrapper">
                 <el-button
                   size="mini"
                   type="success"
                   @click="handleGain(scope.$index, scope.row)"
-                >收获</el-button>
+                >每周收获</el-button>
               </div>
             </el-popover>
           </div>
         </template>
       </el-table-column>
     </el-table>
+
     <el-pagination
       :current-page="currentPage"
-      :page-sizes="[5, 10]"
+      :page-sizes="[5,10]"
       :page-size="pagesize"
-      :total="tableData.length"
+      :total="total"
       layout="total, sizes, prev, pager, next, jumper"
       @size-change="handleSizeChange"
       @current-change="handleCurrentChange"
     />
-
   </div>
 </template>
 
@@ -132,95 +106,76 @@
 export default {
   data () {
     return {
-      reponseData: '',
-      search: '',
+      path: 'PlanCenter',
+      xgrid: this.$store.state.xgrid, // 修改人id
+      QueryUrl: this.$store.state.BaseUrl,
+      loading: true,
+
+      total: 0, // 总数
       currentPage: 1, // 初始页
       pagesize: 10, //    每页的数据
+      reponseData: '',
+      searchform: {
+        ncmc: ''
+      },
+
       tableData: []
     }
   },
   mounted () {
     this.$nextTick(() => {
-      this.httpGet()
+      this.handleDataGet()
     })
-  },
-  // created () {
-  //   this.$nextTick(() => {
-  //     this.httpGet()
-  //   })
-  // },
-  computed: {
-    // 表格模糊查询
-    tables () {
-      const search = this.search
-      if (search) {
-        console.log('this.tableData', this.tableData)
-        return this.tableData.filter(dataNews => {
-          return Object.keys(dataNews).some(key => {
-            return (
-              String(dataNews[key])
-                .toLowerCase()
-                .indexOf(search) > -1
-            )
-          })
-        })
-      }
-      console.log('this.tableData', this.tableData)
-      return this.tableData
-    }
-    // 计算价格
-    // totalprice () {
-    //   let total = 0
-    //   for (const i in this.tableData) {
-    //     console.log(i)
-    //     if (this.tableData[i].price) // 如果checkeds[i]的结果为truth，则进行累加
-    //     // eslint-disable-next-line brace-style
-    //     { total += this.tableData[i].price * 1 }
-    //   }
-    //   console.log(total)
-    //   return total
-    // }
   },
 
   methods: {
+    // 页面加载获取初始值
+    handleDataGet () {
+      // 页面 限制 路径 路由路径 token
 
-    httpGet () {
-      this.$axios({
-        url: this.$store.state.bseurl + '/getplant',
-        method: 'post'
-
-      }).then(res => {
-        this.tableData = res.data.tableData
-        // console.log(res)
-      })
-      // Axios.getTest('getmessagepanel').then(res => {
-      //   console.log(res)
-      // })
+      this.PageAxios(
+        1,
+        this.pagesize,
+        this.QueryUrl + '/userinfo/querymyplant',
+        this.path,
+        this.getCookie('token'),
+        this.searchform
+      )
     },
-
-    test (index, row, item) {
-      console.log(index, row, item)
-    },
-    // 初始页currentPage、初始每页数据数pagesize和数据data
+    // 控制页面页数
     handleSizeChange: function (size) {
-      this.pagesize = size
-      console.log(this.pagesize) // 每页下拉显示数据
+      this.PageAxios(
+        1,
+        size,
+        this.QueryUrl + '/userinfo/querymyplant',
+        this.path,
+        this.getCookie('token'),
+        this.searchform
+      )
     },
+    // 点击第几页
     handleCurrentChange: function (currentPage) {
-      this.currentPage = currentPage
-      console.log(this.currentPage) // 点击第几页
+      this.PageAxios(
+        currentPage,
+        this.pagesize,
+        this.QueryUrl + '/userinfo/querymyplant',
+        this.path,
+        this.getCookie('token'),
+        this.searchform
+      )
     },
-    // 表格查询
-    format (val) {
-      if (val.indexOf(this.search) !== -1 && this.search !== '') {
-        return val.replace(
-          this.search,
-          '<font color="red">' + this.search + '</font>'
-        )
-      } else {
-        return val
+    handleclear () {
+      this.searchform = {
+        ncmc: ''
       }
+      this.handleDataGet()
     },
+    // 搜索
+    handleSearch () {
+      this.searchData = { ncmc: this.searchform.ncmc }
+      this.handleDataGet()
+    },
+
     // 操作选项
     handleSeed (index, row) {
       // let _this = this
@@ -255,7 +210,7 @@ export default {
   float: left;
   margin-left: 10px;
 }
-.btn-type{
+.btn-type {
   //  margin-left: 10px;
 }
 </style>
